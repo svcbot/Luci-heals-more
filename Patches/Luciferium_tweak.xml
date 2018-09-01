@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <Patch>
 	<Operation Class="PatchOperationReplace">
-		<xpath>/Defs/HediffDef[defName = "LuciferiumHigh"]/comps/li[@Class="HediffCompProperties_HealOldWounds"]</xpath>
+		<xpath>/Defs/HediffDef[defName = "LuciferiumHigh"]/comps/li[@Class="HediffCompProperties_HealPermanentWounds"]</xpath>
 		<value>
-			<li Class="LHM.LHM_HealOldWoundsProperties" />
+			<li Class="LHM.HediffCompProperties_HealPermanentWounds" />
 		</value>
 	</Operation>
 
