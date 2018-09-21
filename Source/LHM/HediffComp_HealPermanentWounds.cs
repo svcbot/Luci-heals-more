@@ -1,24 +1,14 @@
 ﻿using RimWorld;
-using System;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Collections.Generic;
-using UnityEngine;
 using Verse;
 
 namespace LHM
 {
-    public class HediffCompProperties_HealPermanentWounds : HediffCompProperties
-    {
-        public HediffCompProperties_HealPermanentWounds()
-        {
-            compClass = typeof(HediffComp_HealPermanentWounds);
-        }
-    }
-
     public class HediffComp_HealPermanentWounds : HediffComp
     {
-        private int ticksToHeal;
+        private int ticksToHeal = 60000;
         private List<string> chronicConditions = new List<string>()
         {
             "BadBack", "Frail", "Cataract", "Blindness", "HearingLoss", "Dementia", "Alzheimers",
@@ -49,6 +39,7 @@ namespace LHM
 
         public override void CompPostTick(ref float severityAdjustment)
         {
+            if (ticksToHeal >= 4 * 60000) ResetTicksToHeal();
             ticksToHeal--;
             if (ticksToHeal <= 0)
             {
@@ -154,53 +145,6 @@ namespace LHM
         public override string CompDebugString()
         {
             return "ticksToHeal: " + ticksToHeal;
-        }
-    }
-
-    public class Mod : Verse.Mod
-    {
-        public Mod(ModContentPack content) : base(content)
-        {
-            GetSettings<Settings>();
-        }
-
-        public override void DoSettingsWindowContents(Rect inRect)
-        {
-            base.DoSettingsWindowContents(inRect);
-            GetSettings<Settings>().DoWindowContents(inRect);
-        }
-
-        public override string SettingsCategory()
-        {
-            return "Luci heals more!";
-        }
-    }
-
-    class Settings : ModSettings
-    {
-        public bool showAgingMessages = false;
-        public bool debugHealingSpeed = false;
-
-        public static Settings Get()
-        {
-            return LoadedModManager.GetMod<LHM.Mod>().GetSettings<Settings>();
-        }
-
-        public void DoWindowContents(Rect wrect)
-        {
-            var options = new Listing_Standard();
-            options.Begin(wrect);
-
-            options.CheckboxLabeled("Show aging messages", checkOn: ref showAgingMessages, tooltip: "Show notification every time age was affected by luci");
-            options.CheckboxLabeled("Debug luci healing", checkOn: ref debugHealingSpeed, tooltip: "Luci heal procs way more often");
-
-            options.End();
-        }
-
-        public override void ExposeData()
-        {
-            Scribe_Values.Look(ref showAgingMessages, "showAgingMessages", false);
-            Scribe_Values.Look(ref debugHealingSpeed, "debugHealingSpeed", false);
         }
     }
 
