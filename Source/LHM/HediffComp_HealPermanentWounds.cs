@@ -8,15 +8,25 @@ namespace LHM
 {
     public class HediffComp_HealPermanentWounds : HediffComp
     {
-        private int ticksToHeal = 60000;
-        private List<string> chronicConditions = new List<string>()
+        private int ticksToHeal;
+        private HashSet<string> chronicConditions = new HashSet<string>()
         {
-            "BadBack", "Frail", "Cataract", "Blindness", "HearingLoss", "Dementia", "Alzheimers",
-            "Asthma", "HeartArteryBlockage", "Carcinoma", "TraumaSavant", "Cirrhosis",
-            "ChemicalDamageSevere", "ChemicalDamageModerate"
+            "Blindness", "TraumaSavant", "Cirrhosis", "ChemicalDamageSevere", "ChemicalDamageModerate"
         };
 
         public HediffCompProperties_HealPermanentWounds Props => (HediffCompProperties_HealPermanentWounds)props;
+
+        public HediffComp_HealPermanentWounds()
+        {
+            // Add all hediffs given by HediffGiver_Birthday 
+            foreach (HediffGiverSetDef hediffGiverSetDef in DefDatabase<HediffGiverSetDef>.AllDefsListForReading)
+            {
+                hediffGiverSetDef.hediffGivers
+                    .FindAll(hg => hg.GetType() == typeof(HediffGiver_Birthday))
+                    .ForEach(hg => chronicConditions.Add(hg.hediff.defName));
+            }
+            Log.Message(string.Join(", ", chronicConditions.ToArray()));
+        }
 
         public override void CompPostMake()
         {
@@ -34,14 +44,13 @@ namespace LHM
             {
                 ticksToHeal = Rand.Range(4 * 60000, 6 * 60000); // one day = 60'000 ticks
             }
-
         }
 
         public override void CompPostTick(ref float severityAdjustment)
         {
-            if (ticksToHeal >= 4 * 60000) ResetTicksToHeal();
             ticksToHeal--;
-            if (ticksToHeal <= 0)
+            if (ticksToHeal >= 4 * 60000) ResetTicksToHeal();
+            else if (ticksToHeal <= 0)
             {
                 TryHealRandomPermanentWound();
                 AffectPawnsAge();
@@ -51,11 +60,11 @@ namespace LHM
 
         private void TryHealRandomPermanentWound()
         {
-            //TODO: there should be a way to find chronic diseases without this list for better mod compatibility
             var selectHediffsQuery = from hd in base.Pawn.health.hediffSet.hediffs
-                         where hd.IsPermanent() || chronicConditions.Contains(hd.def.defName)
-                         select hd;
-            if (selectHediffsQuery.Any()) {
+                                     where hd.IsPermanent() || chronicConditions.Contains(hd.def.defName)
+                                     select hd;
+            if (selectHediffsQuery.Any())
+            {
                 selectHediffsQuery.TryRandomElement(out Hediff hediff);
 
                 if (hediff != null)
@@ -68,7 +77,6 @@ namespace LHM
                     if (healAmount < 0.1f) healAmount = 0.1f;
                     if (hediff.Severity - healAmount < 0.1f) base.Pawn.health.hediffSet.hediffs.Remove(hediff);
                     else hediff.Severity -= healAmount;
-
                 }
 
                 if (PawnUtility.ShouldSendNotificationAbout(base.Pawn))
@@ -89,18 +97,18 @@ namespace LHM
                     int biologicalYears;
                     int biologicalQuadrums;
                     int biologicalDays;
-                    float num4;
+                    float biologicalHours;
 
-                    base.Pawn.ageTracker.AgeBiologicalTicks.TicksToPeriod(out biologicalYears, out biologicalQuadrums, out biologicalDays, out num4);
+                    base.Pawn.ageTracker.AgeBiologicalTicks.TicksToPeriod(out biologicalYears, out biologicalQuadrums, out biologicalDays, out biologicalHours);
 
                     string ageBefore = "AgeBiological".Translate(new object[] { biologicalYears, biologicalQuadrums, biologicalDays });
                     long diffFromOptimalAge = base.Pawn.ageTracker.AgeBiologicalTicks - 25 * 60 * 60000;
                     base.Pawn.ageTracker.AgeBiologicalTicks -= (long)(diffFromOptimalAge * 0.05f);
 
-                    base.Pawn.ageTracker.AgeBiologicalTicks.TicksToPeriod(out biologicalYears, out biologicalQuadrums, out biologicalDays, out num4);
+                    base.Pawn.ageTracker.AgeBiologicalTicks.TicksToPeriod(out biologicalYears, out biologicalQuadrums, out biologicalDays, out biologicalHours);
                     string ageAfter = "AgeBiological".Translate(new object[] { biologicalYears, biologicalQuadrums, biologicalDays });
 
-                    if (base.Pawn.IsColonist && Settings.Get().showAgingMessages)
+                    if (Pawn.IsColonist && Settings.Get().showAgingMessages)
                     {
                         Messages.Message("MessageAgeReduced".Translate(new object[]
                             {
@@ -108,10 +116,9 @@ namespace LHM
                                 ageBefore,
                                 ageAfter
                             }), MessageTypeDefOf.PositiveEvent);
-                        Messages.Message("MessageAgeReduced".Translate(parent.LabelCap, base.Pawn.LabelShort, ageBefore, ageAfter), 
+                        Messages.Message("MessageAgeReduced".Translate(parent.LabelCap, base.Pawn.LabelShort, ageBefore, ageAfter),
                             base.Pawn, MessageTypeDefOf.PositiveEvent, true);
                     }
-
                 }
                 else if (base.Pawn.ageTracker.AgeBiologicalYears < 25) // if 25 do nothing, if younger that 25, that mature faster towards 25
                 {
@@ -132,7 +139,6 @@ namespace LHM
                 {
                     base.Pawn.ageTracker.AgeBiologicalTicks += (long)(5 * 60000); // get 5 days older
                 }
-
             }
 
         }
@@ -149,3 +155,4 @@ namespace LHM
     }
 
 }
+

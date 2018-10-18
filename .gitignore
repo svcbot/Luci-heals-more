@@ -37,9 +37,10 @@ ehthumbs.db
 Thumbs.db
 desktop.ini
 
-# Dirs #
+# VS related #
 ######################
 bin/
 obj/
 Service References/
 .vs/
+.csproj

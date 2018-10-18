@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ModMetaData>
-	<name>[B19] Luci heals more!</name>
+	<name>[1.0] Luci heals more!</name>
 	<author>svc_bot</author>
-	<targetVersion>0.19.2009</targetVersion>
+	<targetVersion>1.0.2059</targetVersion>
 	<description>
 v 1.0.1
 
@@ -13,9 +13,6 @@ Features list:
     * Chronic diseases can be healed alongside permanent injuries.
     * Reduction of the biological age if older and acceleration towards the optimal age (25 years in humans, begin of the third life stage in animals) if younger.
     * Does not require a new game. 
-
-TODO:
-    * Better compatibility with other mods. Currently if other mod adds new chronic diseases, they will not be affected.
 
     Official ludeon forum thread: https://ludeon.com/forums/index.php?topic=34244.0
 	</description>
