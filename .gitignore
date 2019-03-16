@@ -43,4 +43,4 @@ bin/
 obj/
 Service References/
 .vs/
-.csproj
+packages/
