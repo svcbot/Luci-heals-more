@@ -14,12 +14,12 @@ namespace LHM
 
         public HashSet<string> ChronicConditions { get; set; } = new HashSet<string>()
         {
-            "TraumaSavant", "ChemicalDamageSevere", "ChemicalDamageModerate"
+            "TraumaSavant", "ChemicalDamageSevere", "ChemicalDamageModerate", "Blindness", "Cirrhosis"
         };
 
         public HediffComp_HealPermanentWounds()
         {
-            if(ticksToHeal > 4 * TicksInDay) ResetTicksToHeal();
+            if(ticksToHeal > 6 * TicksInDay) ResetTicksToHeal();
 
             // Add all hediffs given by HediffGiver_Birthday 
             foreach (HediffGiverSetDef hediffGiverSetDef in DefDatabase<HediffGiverSetDef>.AllDefsListForReading)
