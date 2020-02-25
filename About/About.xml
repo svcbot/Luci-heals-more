@@ -2,6 +2,7 @@
 <ModMetaData>
 	<name>Luci heals more!</name>
 	<author>svc_bot</author>
+    <packageId>svcbot.LHM</packageId>
 	 <supportedVersions>
         <li>1.0</li>
         <li>1.1</li>
@@ -13,10 +14,11 @@ v 1.1.4
 
 Features list:
     * Luciferium healing occurs every 4 to 6 days, instead of 15 to 30 days as in vanilla.
-    * Chronic diseases can be healed alongside permanent injuries.
+    * Chronic diseases can be healed alongside permanent injuries. Also additionally heals trauma Savant, chemical damage, Cirrhosis
     * Reduction of the biological age if older and acceleration towards the optimal age (25 years in humans, begin of the third life stage in animals) if younger.
     * Does not require a new game. 
 
     Official ludeon forum thread: https://ludeon.com/forums/index.php?topic=34244.0
 	</description>
+    <url>https://ludeon.com/forums/index.php?topic=34244.0</url>
 </ModMetaData>
