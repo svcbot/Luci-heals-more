@@ -12,7 +12,7 @@ namespace LHM
 
         public HediffCompProperties_HealPermanentWounds Props => (HediffCompProperties_HealPermanentWounds)props;
 
-        public HashSet<string> ChronicConditions { get; set; } = new HashSet<string>()
+        public HashSet<string> AdditionalHedifsToHeal { get; set; } = new HashSet<string>()
         {
             "TraumaSavant", "ChemicalDamageSevere", "ChemicalDamageModerate", "Blindness", "Cirrhosis"
         };
@@ -20,17 +20,7 @@ namespace LHM
         public HediffComp_HealPermanentWounds()
         {
             if(ticksToHeal > 6 * TicksInDay) ResetTicksToHeal();
-
-            // Add all hediffs given by HediffGiver_Birthday 
-            foreach (HediffGiverSetDef hediffGiverSetDef in DefDatabase<HediffGiverSetDef>.AllDefsListForReading)
-            {
-                hediffGiverSetDef.hediffGivers
-                    .FindAll(hg => hg.GetType() == typeof(HediffGiver_Birthday))
-                    .ForEach(hg => {
-                        if (hg.hediff.isBad && hg.hediff.everCurableByItem) ChronicConditions.Add(hg.hediff.defName);
-                        });
-            }
-            Log.Message("Additional chronic conditions that will be healed by luci:\n" + string.Join(", ", ChronicConditions.ToArray()));
+            Log.Message("Additional hedifs that will be healed by luci:\n" + string.Join(", ", AdditionalHedifsToHeal.ToArray()));
         }
 
         public override void CompPostMake()
@@ -60,16 +50,16 @@ namespace LHM
         private void TryHealRandomPermanentWound()
         {
             var selectHediffsQuery = from hd in Pawn.health.hediffSet.hediffs
-                                     where hd.IsPermanent() || ChronicConditions.Contains(hd.def.defName)
+                                     where hd.IsPermanent() || hd.def.chronic || AdditionalHedifsToHeal.Contains(hd.def.defName)
                                      select hd;
 
             if (selectHediffsQuery.TryRandomElement(out Hediff hediff))  
             {                
                 float meanHeal = 0.2f;
-                float rndHealPercent = meanHeal + (Rand.Gaussian() * meanHeal / 2f); // heal % is normaly distributed between 10 % and 30 %
+                float rndHealPercentValue = meanHeal + (Rand.Gaussian() * meanHeal / 2f); // heal % is normaly distributed between 10 % and 30 %
 
                 float bodyPartMaxHP = hediff.Part.def.GetMaxHealth(hediff.pawn);
-                float rawHealAmount = hediff.IsPermanent() ? bodyPartMaxHP * rndHealPercent : rndHealPercent;
+                float rawHealAmount = hediff.IsPermanent() ? bodyPartMaxHP * rndHealPercentValue : rndHealPercentValue;
                 float healAmount = (rawHealAmount < 0.1f) ? 0.1f : rawHealAmount;
 
                 if (hediff.Severity - healAmount < 0.1f) HandleLowSeverity(hediff);
@@ -107,6 +97,7 @@ namespace LHM
                 int lifeStage = Pawn.ageTracker.CurLifeStageIndex;
                 long startOfThirdStage = (long)(Pawn.RaceProps.lifeStageAges[2].minAge * 60 * TicksInDay);
                 long diffFromOptimalAge = Pawn.ageTracker.AgeBiologicalTicks - startOfThirdStage;
+
                 if (lifeStage >= 3 && diffFromOptimalAge > 0) // then need to become younger
                 {
                     Pawn.ageTracker.AgeBiologicalTicks -= (long)(diffFromOptimalAge * 0.05f);
@@ -121,12 +112,7 @@ namespace LHM
 
         private void ReduceAgeOfHumanlike()
         {
-            int biologicalYears;
-            int biologicalQuadrums;
-            int biologicalDays;
-            float biologicalHours;
-
-            Pawn.ageTracker.AgeBiologicalTicks.TicksToPeriod(out biologicalYears, out biologicalQuadrums, out biologicalDays, out biologicalHours);
+            Pawn.ageTracker.AgeBiologicalTicks.TicksToPeriod(out int biologicalYears, out int biologicalQuadrums, out int biologicalDays, out float biologicalHours);
 
             string ageBefore = "AgeBiological".Translate(biologicalYears, biologicalQuadrums, biologicalDays);
             long diffFromOptimalAge = Pawn.ageTracker.AgeBiologicalTicks - (25 * 60 * TicksInDay);
