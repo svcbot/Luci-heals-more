@@ -8,19 +8,20 @@ namespace LHM
     public class HediffComp_HealPermanentWounds : HediffComp
     {
         private const int TicksInDay = 60000;
+        private const float MinimalHealthAmount = 0.01f;
+
         private int ticksToHeal;
 
         public HediffCompProperties_HealPermanentWounds Props => (HediffCompProperties_HealPermanentWounds)props;
 
         public HashSet<string> AdditionalHedifsToHeal { get; set; } = new HashSet<string>()
         {
-            "TraumaSavant", "ChemicalDamageSevere", "ChemicalDamageModerate", "Blindness", "Cirrhosis"
+            "TraumaSavant", "ChemicalDamageSevere", "ChemicalDamageModerate", "Cirrhosis"
         };
 
         public HediffComp_HealPermanentWounds()
         {
             if(ticksToHeal > 6 * TicksInDay) ResetTicksToHeal();
-            Log.Message("Additional hedifs that will be healed by luci:\n" + string.Join(", ", AdditionalHedifsToHeal.ToArray()));
         }
 
         public override void CompPostMake()
@@ -46,7 +47,7 @@ namespace LHM
                 ResetTicksToHeal();
             }
         }
-        
+
         private void TryHealRandomPermanentWound()
         {
             var selectHediffsQuery = from hd in Pawn.health.hediffSet.hediffs
@@ -60,9 +61,9 @@ namespace LHM
 
                 float bodyPartMaxHP = hediff.Part.def.GetMaxHealth(hediff.pawn);
                 float rawHealAmount = hediff.IsPermanent() ? bodyPartMaxHP * rndHealPercentValue : rndHealPercentValue;
-                float healAmount = (rawHealAmount < 0.1f) ? 0.1f : rawHealAmount;
+                float healAmount = (rawHealAmount < MinimalHealthAmount) ? MinimalHealthAmount : rawHealAmount;
 
-                if (hediff.Severity - healAmount < 0.1f) HandleLowSeverity(hediff);
+                if (hediff.Severity - healAmount < MinimalHealthAmount) HandleLowSeverity(hediff);
                 else hediff.Severity -= healAmount;
             }
         }
