@@ -1,8 +1,10 @@
+!/Assemblies/
+!/Assemblies/*
+
 # Compiled source #
 ###################
 *.com
 *.class
-*.dll
 *.exe
 *.o
 *.so

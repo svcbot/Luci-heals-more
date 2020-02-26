@@ -1,21 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ModMetaData>
-	<name>[1.0] Luci heals more!</name>
+	<name>Luci heals more!</name>
 	<author>svc_bot</author>
+    <packageId>svcbot.LHM</packageId>
 	 <supportedVersions>
         <li>1.0</li>
+        <li>1.1</li>
      </supportedVersions>
 	<description>
-v 1.1.3
+v 1.1.4
 
-    This mod changes how luciferium heals. In vanilla it takes 1 to 2 seasons to heal a permanent injury, whether it is a 1/10 permanent brain injury or 29/30 permanent leg gunshot injury. This mod makes the heal event happen more often, but the healing power is reduced, so that only max 3 point are healed. So the 1/10 brain injury can take the same 1 to 2 seasons to be fully removed, but the pawn will start beeing useful much sooner. This is also more helpful, if the pawn has many small injuries. Chronic diseases, such as dementia or bad back, can not be healed in the vanilla. In this mod this can also be healed with luciferium. Beeing old is not a problem anymore: luciferium will also reduce the biological age. 
+    This mod changes how luciferium heals. In vanilla it takes 1 to 2 seasons to heal a permanent injury, whether it is a 1/10 permanent brain injury or 29/30 permanent leg gunshot injury. This mod makes the heal event happen more often, but the healing power is reduced, so that only 10 % - 30 % hp are healed at once. So the 1/10 brain injury can take the same 1 to 2 seasons to be fully removed, but the pawn will start beeing useful much sooner. This is also more helpful, if the pawn has many small injuries. Things like chemical damage and cirrhosis can now also be healed with luciferium. Beeing old is not a problem anymore: luciferium will also reduce the biological age. 
 
 Features list:
     * Luciferium healing occurs every 4 to 6 days, instead of 15 to 30 days as in vanilla.
-    * Chronic diseases can be healed alongside permanent injuries.
+    * Chronic diseases will be gradually healed alongside permanent injuries. Also additionally heals trauma Savant, chemical damage, cirrhosis
     * Reduction of the biological age if older and acceleration towards the optimal age (25 years in humans, begin of the third life stage in animals) if younger.
     * Does not require a new game. 
 
     Official ludeon forum thread: https://ludeon.com/forums/index.php?topic=34244.0
 	</description>
+    <url>https://ludeon.com/forums/index.php?topic=34244.0</url>
 </ModMetaData>

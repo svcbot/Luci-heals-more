@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Patch>
+	<Operation Class="PatchOperationReplace">
+		<xpath>/Defs/HediffDef[defName = "LuciferiumHigh"]/comps/li[@Class="HediffCompProperties_HealPermanentWounds"]</xpath>
+		<value>
+			<li Class="LHM.HediffCompProperties_HealPermanentWounds" />
+		</value>
+	</Operation>
+
+	<!-- vanila luciferium should have this -->
+	<Operation Class="PatchOperationAdd">
+		<xpath>/Defs/HediffDef[defName = "LuciferiumHigh"]/stages/li/capMods</xpath>
+		<value>
+			<li>
+				<capacity>Hearing</capacity>
+				<offset>0.10</offset>
+			</li>
+		</value>
+	</Operation>  
+
+</Patch>
