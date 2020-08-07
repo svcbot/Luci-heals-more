@@ -8,6 +8,9 @@
 *.exe
 *.o
 *.so
+*.dll.CodeAnalysisLog.xml
+*.dll.config
+*.dll.lastcodeanalysissucceeded
 
 # Packages #
 ############
