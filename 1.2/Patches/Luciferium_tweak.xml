@@ -3,7 +3,7 @@
 	<Operation Class="PatchOperationReplace">
 		<xpath>/Defs/HediffDef[defName = "LuciferiumHigh"]/comps/li[@Class="HediffCompProperties_HealPermanentWounds"]</xpath>
 		<value>
-			<li Class="LHM.HediffCompProperties_HealPermanentWounds" />
+			<li Class="LHM.HediffCompProperties_LuciferiumHeal" />
 		</value>
 	</Operation>
 
