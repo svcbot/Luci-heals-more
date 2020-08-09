@@ -14,6 +14,8 @@ namespace LHM
 
         private int ticksToHeal;
 
+        
+
         public HediffCompProperties_LuciferiumHeal Props => (HediffCompProperties_LuciferiumHeal)props;
 
         public HashSet<string> AdditionalHedifsToHeal { get; set; } = new HashSet<string>()
@@ -72,6 +74,8 @@ namespace LHM
                 else
                     hediff.Severity -= healAmount;
             }
+
+            TryRegrowMissingBodypart();
         }
 
         private void HandleLowSeverity(Hediff hediff)
@@ -142,6 +146,36 @@ namespace LHM
                     MessageTypeDefOf.PositiveEvent, true
                 );
             }
+        }
+
+        private void TryRegrowMissingBodypart()
+        {
+            HediffDef regrowingHediffDef = LHM_HediffDefOf.RegrowingBodypart;
+            BodyPartRecord missingPart = FindBiggestMissingBodyPart();
+
+            if(regrowingHediffDef == null)
+            {
+                Log.Warning("HediffDef for regrowing bodypart is not loaded correctly");
+            }
+
+            if(missingPart != null)
+            {
+                Hediff addedHediff = Pawn.health.AddHediff(regrowingHediffDef);
+                Log.Message("Regrowing Hediff added: " + addedHediff.Label);
+            }
+        }
+
+        private BodyPartRecord FindBiggestMissingBodyPart(float minCoverage = 0f)
+        {
+            BodyPartRecord bodyPartRecord = null;
+            foreach (Hediff_MissingPart missingPartsCommonAncestor in Pawn.health.hediffSet.GetMissingPartsCommonAncestors())
+            {
+                if (!(missingPartsCommonAncestor.Part.coverageAbsWithChildren < minCoverage) && !Pawn.health.hediffSet.PartOrAnyAncestorHasDirectlyAddedParts(missingPartsCommonAncestor.Part) && (bodyPartRecord == null || missingPartsCommonAncestor.Part.coverageAbsWithChildren > bodyPartRecord.coverageAbsWithChildren))
+                {
+                    bodyPartRecord = missingPartsCommonAncestor.Part;
+                }
+            }
+            return bodyPartRecord;
         }
 
         public override void CompExposeData()

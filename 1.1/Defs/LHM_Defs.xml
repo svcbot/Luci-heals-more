@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+	<HediffDef>
+		<defName>RegrowingBodypart</defName>
+		<hediffClass>LHM.HediffComp_RegrowingBodyPart</hediffClass>
+		<label>Regrowing</label>
+		<description>Try to not loose it again next time</description>
+		<defaultLabelColor>(1, 0, 0.92)</defaultLabelColor>
+		<isBad>false</isBad>
+		<scenarioCanAdd>true</scenarioCanAdd>
+		<initialSeverity>0.0</initialSeverity>
+		<maxSeverity>1.0</maxSeverity>
+		<comps>
+			<li Class="HediffCompProperties_Immunizable">
+				<severityPerDayNotImmune>0.1</severityPerDayNotImmune> 
+			</li>
+		</comps>
+		<stages>
+			<li>
+				<painFactor>1.1</painFactor>
+				<hungerRateFactor>1.25</hungerRateFactor>
+			</li>
+		</stages>
+	</HediffDef>
+</Defs>
