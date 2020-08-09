@@ -160,6 +160,7 @@ namespace LHM
 
             if(missingPart != null)
             {
+                Pawn.health.hediffSet.hediffs.Insert();
                 Hediff addedHediff = Pawn.health.AddHediff(regrowingHediffDef, missingPart);
                 Log.Message("Regrowing Hediff added: " + addedHediff.Label);
             }

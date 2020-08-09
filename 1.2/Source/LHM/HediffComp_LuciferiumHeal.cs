@@ -75,6 +75,8 @@ namespace LHM
                 else
                     hediff.Severity -= healAmount;
             }
+
+            TryRegrowMissingBodypart();
         }
 
         private void HandleLowSeverity(Hediff hediff)
@@ -139,6 +141,39 @@ namespace LHM
                     MessageTypeDefOf.PositiveEvent, true
                 );
             }
+        }
+
+        private void TryRegrowMissingBodypart()
+        {
+            HediffDef regrowingHediffDef = LHM_HediffDefOf.RegrowingBodypart;
+            BodyPartRecord missingPart = FindBiggestMissingBodyPart();
+
+            if(regrowingHediffDef == null)
+            {
+                Log.Warning("HediffDef for regrowing bodypart is not loaded correctly");
+            }
+
+            if(missingPart != null)
+            {
+                Pawn.health.RestorePart(missingPart);
+                Pawn.health.AddHediff(regrowingHediffDef, missingPart);
+                Log.Message("Regrowing Hediff added");
+            }
+        }
+
+        private BodyPartRecord FindBiggestMissingBodyPart()
+        {
+            BodyPartRecord bodyPartRecord = null;
+            foreach (Hediff_MissingPart missingPartsCommonAncestor in Pawn.health.hediffSet.GetMissingPartsCommonAncestors())
+            {
+                if (
+                    !Pawn.health.hediffSet.PartOrAnyAncestorHasDirectlyAddedParts(missingPartsCommonAncestor.Part) && 
+                    (bodyPartRecord == null || missingPartsCommonAncestor.Part.coverageAbsWithChildren > bodyPartRecord.coverageAbsWithChildren))
+                {
+                    bodyPartRecord = missingPartsCommonAncestor.Part;
+                }
+            }
+            return bodyPartRecord;
         }
 
         public override void CompExposeData()
