@@ -160,7 +160,7 @@ namespace LHM
 
             if(missingPart != null)
             {
-                Hediff addedHediff = Pawn.health.AddHediff(regrowingHediffDef);
+                Hediff addedHediff = Pawn.health.AddHediff(regrowingHediffDef, missingPart);
                 Log.Message("Regrowing Hediff added: " + addedHediff.Label);
             }
         }
