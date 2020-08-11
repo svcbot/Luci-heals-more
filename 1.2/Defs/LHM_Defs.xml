@@ -2,15 +2,16 @@
 <Defs>
 	<HediffDef>
 		<defName>RegrowingBodypart</defName>
-		<hediffClass>LHM.HediffComp_RegrowingBodyPart</hediffClass>
+		<hediffClass>LHM.Hediff_RegrowingBodyPart</hediffClass>
 		<label>Regrowing</label>
 		<description>Try to not loose it again next time</description>
-		<defaultLabelColor>(0.2,0.85,0.2)</defaultLabelColor>
 		<isBad>false</isBad>
 		<scenarioCanAdd>true</scenarioCanAdd>
-		<addedPartProps>
-				<partEfficiency>0.1</partEfficiency>		
-		</addedPartProps>
+		<comps>
+			<li Class="LHM.HediffCompProperties_RegrowingBodyPart">
+			</li>
+		</comps>
+
 		<stages>
 			<li>
 				<painOffset>0.1</painOffset>

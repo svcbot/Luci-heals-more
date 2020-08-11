@@ -1,42 +1,27 @@
-﻿using System;
-using RimWorld;
-using Verse;
+﻿using Verse;
 
 namespace LHM
 {
-    class HediffComp_RegrowingBodyPart : Hediff_AddedPart
+    class HediffComp_RegrowingBodyPart : HediffComp_TendDuration
     {
-        public override bool ShouldRemove => Severity <= 0.1f;
+        public HediffCompProperties_RegrowingBodyPart Props => (HediffCompProperties_RegrowingBodyPart)props;
 
-        public int ticksUntilNextHeal;
+        //public bool isPermanentInt = false;
 
-        public override void Tick()
+        //public bool IsPermanent => false;
+
+        public new bool IsTended => true;
+
+        public new bool AllowTend => true;
+
+        public override bool CompShouldRemove => true;
+
+        public PainCategory PainCategory => PainCategory.Painless;
+
+        public override void CompPostInjuryHeal(float amount)
         {
-            base.Tick();
-            if (Current.Game.tickManager.TicksGame >= ticksUntilNextHeal)
-            {
-                Severity -= 0.1f;
-                SetNextTick();
-            }
+            return;
         }
-
-        public override void PostRemoved()
-        {
-            base.PostRemoved();
-
-            if (Severity >= 1f)
-            {
-                pawn.health.RestorePart(base.Part);
-
-                Messages.Message("Limb regrown", MessageTypeDefOf.PositiveEvent, true);
-            }
-        }
-
-        public void SetNextTick()
-        {
-            ticksUntilNextHeal = Current.Game.tickManager.TicksGame + 500;
-        }
-
     }
 
 }

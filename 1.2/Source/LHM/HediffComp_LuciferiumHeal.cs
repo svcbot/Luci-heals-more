@@ -7,14 +7,13 @@ namespace LHM
 {
     public class HediffComp_LuciferiumHeal : HediffComp
     {
-        private const int TicksInDay = 60000;
         private const int DaysInYear = 60;
         private const int OptimalAge = 25;
         private const float MinimalHealthAmount = 0.01f;
 
         private int ticksToHeal;
 
-        public HediffCompProperties_LuciferiumHeal Props => (HediffCompProperties_LuciferiumHeal)props;
+        public HediffCompProperties_LuciferiumHeal Props => (HediffCompProperties_LuciferiumHeal) props;
 
         public HashSet<string> AdditionalHedifsToHeal { get; } = new HashSet<string>()
         {
@@ -23,7 +22,11 @@ namespace LHM
 
         public HediffComp_LuciferiumHeal()
         {
+<<<<<<< HEAD
             if(ticksToHeal > 6 * GenDate.TicksPerDay) ResetTicksToHeal();
+=======
+            if (ticksToHeal > 6 * GenDate.TicksPerDay) ResetTicksToHeal();
+>>>>>>> 9bef1a6... wip
         }
 
         public override void CompPostMake()
@@ -34,14 +37,24 @@ namespace LHM
 
         private void ResetTicksToHeal()
         {
+<<<<<<< HEAD
             // next heal event will happen after an hour in the debug mode or after 4 to 6 days (uniformly distributed) normaly
             ticksToHeal = Settings.Get().enableDebugHealingSpeed ? 2500 : Rand.Range(4 * GenDate.TicksPerDay, 6 * GenDate.TicksPerDay); 
+=======
+            // next heal event will happen after an hour in the debug mode or after 4 to 6 days (uniformly distributed) in normal mode
+            ticksToHeal = Settings.Get().debugHealingSpeed ? 2500 : Rand.Range(4 * GenDate.TicksPerDay, 6 * GenDate.TicksPerDay);
+>>>>>>> 9bef1a6... wip
         }
 
         public override void CompPostTick(ref float severityAdjustment)
         {
             ticksToHeal--;
+<<<<<<< HEAD
             if (ticksToHeal >= 6 * GenDate.TicksPerDay) ResetTicksToHeal();
+=======
+            if (ticksToHeal >= 6 * GenDate.TicksPerDay)
+                ResetTicksToHeal();
+>>>>>>> 9bef1a6... wip
             else if (ticksToHeal <= 0)
             {
                 TryHealRandomPermanentWound();
@@ -99,13 +112,24 @@ namespace LHM
         {
             if (Pawn.RaceProps.Humanlike)
             {
+<<<<<<< HEAD
                 if (Pawn.ageTracker.AgeBiologicalYears > 25) ReduceAgeOfHumanlike();
                 else if (Pawn.ageTracker.AgeBiologicalYears < 25) Pawn.ageTracker.AgeBiologicalTicks += (long)(15 * GenDate.TicksPerDay); // get one quadrum older
+=======
+                if (Pawn.ageTracker.AgeBiologicalYears > OptimalAge)
+                    ReduceAgeOfHumanlike();
+                else if (Pawn.ageTracker.AgeBiologicalYears < OptimalAge)
+                    Pawn.ageTracker.AgeBiologicalTicks += (long)(15 * GenDate.TicksPerDay); // get one quadrum older
+>>>>>>> 9bef1a6... wip
             }
             else // if not humanlike then optimal age is the start of the third stage
             {
                 int lifeStage = Pawn.ageTracker.CurLifeStageIndex;
+<<<<<<< HEAD
                 long startOfThirdStage = (long)(Pawn.RaceProps.lifeStageAges[2].minAge * 60 * GenDate.TicksPerDay);
+=======
+                long startOfThirdStage = (long)(Pawn.RaceProps.lifeStageAges[2].minAge * DaysInYear * GenDate.TicksPerDay);
+>>>>>>> 9bef1a6... wip
                 long diffFromOptimalAge = Pawn.ageTracker.AgeBiologicalTicks - startOfThirdStage;
 
                 if (lifeStage >= 3 && diffFromOptimalAge > 0) // then need to become younger
@@ -125,7 +149,7 @@ namespace LHM
             Pawn.ageTracker.AgeBiologicalTicks.TicksToPeriod(out int biologicalYears, out int biologicalQuadrums, out int biologicalDays, out float biologicalHours);
 
             string ageBefore = "AgeBiological".Translate(biologicalYears, biologicalQuadrums, biologicalDays);
-            long diffFromOptimalAge = Pawn.ageTracker.AgeBiologicalTicks - OptimalAge * DaysInYear * TicksInDay;
+            long diffFromOptimalAge = Pawn.ageTracker.AgeBiologicalTicks - OptimalAge * DaysInYear * GenDate.TicksPerDay;
             Pawn.ageTracker.AgeBiologicalTicks -= (long)(diffFromOptimalAge * 0.05f);
 
             Pawn.ageTracker.AgeBiologicalTicks.TicksToPeriod(out biologicalYears, out biologicalQuadrums, out biologicalDays, out biologicalHours);
@@ -150,13 +174,13 @@ namespace LHM
 
             if(regrowingHediffDef == null)
             {
-                Log.Warning("HediffDef for regrowing bodypart is not loaded correctly");
+                Log.Warning("HediffDef for regrowing bodypart is not loaded");
             }
 
             if(missingPart != null)
             {
                 Pawn.health.RestorePart(missingPart);
-                Pawn.health.AddHediff(regrowingHediffDef, missingPart);
+                Pawn.health.AddHediff(HediffMaker.MakeHediff(regrowingHediffDef, Pawn, missingPart));
                 Log.Message("Regrowing Hediff added");
             }
         }
