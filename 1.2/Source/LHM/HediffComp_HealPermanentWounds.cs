@@ -70,9 +70,7 @@ namespace LHM
 
         private void HandleLowSeverity(Hediff hediff)
         {
-            if (hediff.IsPermanent()) hediff.Severity = 0f;
-            else Pawn.health.RemoveHediff(hediff);
-
+            Pawn.health.RemoveHediff(hediff);
             if (PawnUtility.ShouldSendNotificationAbout(Pawn))
             {
                 Messages.Message("MessagePermanentWoundHealed".Translate(
