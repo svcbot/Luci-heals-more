@@ -5,8 +5,10 @@ namespace LHM
 {
     class Settings : ModSettings
     {
-        public bool showAgingMessages = false;
-        public bool debugHealingSpeed = false;
+        public bool showAgingMessages;
+        public bool shouldAffectAge;
+        public bool healTraumaSavant;
+        public bool enableDebugHealingSpeed;
 
         public static Settings Get()
         {
@@ -18,8 +20,10 @@ namespace LHM
             var options = new Listing_Standard();
             options.Begin(wrect);
 
-            options.CheckboxLabeled("Show aging messages", checkOn: ref showAgingMessages, tooltip: "Show notification every time age was affected by luci");
-            options.CheckboxLabeled("Debug luci healing", checkOn: ref debugHealingSpeed, tooltip: "Luci heal procs way more often");
+            options.CheckboxLabeled("Affect biological age", checkOn: ref shouldAffectAge, tooltip: "Reduce or accelerate biological age towards 25 years. In animals the fixed point is the start of the third stage."); 
+            options.CheckboxLabeled("Show aging messages", checkOn: ref showAgingMessages, tooltip: "Show notification every time age was affected by luci.");
+            options.CheckboxLabeled("Allow healing trauma savant", checkOn: ref healTraumaSavant, tooltip: "Double edged sword. Most of the time people don't want to heal it, until the best trader who also keeps the mood in the colony high is affected.");
+            options.CheckboxLabeled("Debug luci healing", checkOn: ref enableDebugHealingSpeed, tooltip: "Luci heal procs every hour.");
 
             options.End();
         }
@@ -27,8 +31,10 @@ namespace LHM
         public override void ExposeData()
         {
             Scribe_Values.Look(ref showAgingMessages, "showAgingMessages", false);
+            Scribe_Values.Look(ref shouldAffectAge, "shouldAffectAge", true);
+            Scribe_Values.Look(ref healTraumaSavant, "healTraumaSavant", false);
 #if DEBUG
-            Scribe_Values.Look(ref debugHealingSpeed, "debugHealingSpeed", false);
+            Scribe_Values.Look(ref enableDebugHealingSpeed, "debugHealingSpeed", false);
 #endif
         }
     }
