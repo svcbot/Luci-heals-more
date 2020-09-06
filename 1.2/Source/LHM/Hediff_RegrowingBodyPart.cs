@@ -7,24 +7,27 @@ namespace LHM
 {
     class Hediff_RegrowingBodyPart : Hediff_Injury
     {
+        private const int healInterval = 500;
+
+        private int ticksUntilNextHeal;
+
+        private readonly float healPerDay = 2f;
+
+        private float healAmount => healPerDay / (GenDate.TicksPerDay / healInterval);
+
         public override bool ShouldRemove => Severity <= 0.001f;
 
         public override void PostAdd(DamageInfo? dinfo)
         {
             Severity = Part.def.GetMaxHealth(pawn) - 1;
             CurStage.restFallFactorOffset = Part.def.GetMaxHealth(pawn) / 100;
-            
+            HediffComp_GetsPermanent permanentComp = (HediffComp_GetsPermanent)comps.Find(comp => comp is HediffComp_GetsPermanent);
+            permanentComp.IsPermanent = true;
         }
 
         public override float PainOffset => Severity / base.Part.def.GetMaxHealth(pawn) * 0.1f;
 
         public override float BleedRate => 0f;
-
-        //public bool IsFresh => false;
-
-        public bool IsTended => true;
-
-        private int ticksUntilNextHeal;
 
         public override Color LabelColor
         {
@@ -42,21 +45,6 @@ namespace LHM
             }
         }
 
-        public override void Heal(float amount)
-        {
-            return;
-        }
-
-        public override void Tick()
-        {
-            base.Tick();
-            if (Current.Game.tickManager.TicksGame >= ticksUntilNextHeal)
-            {
-                Severity -= 0.1f;
-                SetNextTick();
-            }
-        }
-
         public override void PostRemoved()
         {
             base.PostRemoved();
@@ -65,9 +53,19 @@ namespace LHM
             
         }
 
+        public override void Tick()
+        {
+            base.Tick();
+            if (Current.Game.tickManager.TicksGame >= ticksUntilNextHeal)
+            {
+                Severity -= healAmount;
+                SetNextTick();
+            }
+        }
+
         public void SetNextTick()
         {
-            ticksUntilNextHeal = Current.Game.tickManager.TicksGame + GenDate.TicksPerHour;
+            ticksUntilNextHeal = Current.Game.tickManager.TicksGame + healInterval;
         }
 
     }

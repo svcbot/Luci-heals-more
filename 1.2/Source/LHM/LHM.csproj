@@ -62,8 +62,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="HediffCompProperties_LuciferiumHeal.cs" />
-    <Compile Include="HediffCompProperties_RegrowingBodyPart.cs" />
-    <Compile Include="HediffComp_RegrowingBodyPart.cs" />
     <Compile Include="HediffComp_LuciferiumHeal.cs" />
     <Compile Include="Hediff_RegrowingBodyPart.cs" />
     <Compile Include="LHM_HediffDefOf.cs" />

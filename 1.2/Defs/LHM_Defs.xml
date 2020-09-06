@@ -5,16 +5,15 @@
 		<hediffClass>LHM.Hediff_RegrowingBodyPart</hediffClass>
 		<label>Regrowing</label>
 		<description>Try to not loose it again next time</description>
-		<isBad>false</isBad>
+
 		<scenarioCanAdd>true</scenarioCanAdd>
 		<comps>
-			<li Class="LHM.HediffCompProperties_RegrowingBodyPart">
+			<li Class="HediffCompProperties_GetsPermanent">
 			</li>
 		</comps>
 
 		<stages>
 			<li>
-				<painOffset>0.1</painOffset>
 				<hungerRateFactor>1.25</hungerRateFactor>
 			</li>
 		</stages>
