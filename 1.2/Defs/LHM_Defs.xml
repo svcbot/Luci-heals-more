@@ -14,7 +14,7 @@
 
 		<stages>
 			<li>
-				<hungerRateFactor>1.25</hungerRateFactor>
+				<hungerRateFactor>1</hungerRateFactor>
 			</li>
 		</stages>
 	</HediffDef>

@@ -37,7 +37,7 @@ namespace LHM
         private void ResetTicksToHeal()
         {
             // next heal event will happen after an hour in the debug mode or after 4 to 6 days (uniformly distributed) normaly
-            ticksToHeal = Settings.Get().enableDebugHealingSpeed ? 2500 : Rand.Range(4 * GenDate.TicksPerDay, 6 * GenDate.TicksPerDay); 
+            ticksToHeal = Settings.Get().EnableDebugHealingSpeed ? 2500 : Rand.Range(4 * GenDate.TicksPerDay, 6 * GenDate.TicksPerDay); 
         }
 
         public override void CompPostTick(ref float severityAdjustment)
@@ -48,7 +48,7 @@ namespace LHM
             else if (ticksToHeal <= 0)
             {
                 TryHealRandomPermanentWound();
-                if (Settings.Get().shouldAffectAge) AffectPawnsAge();
+                if (Settings.Get().ShouldAffectAge) AffectPawnsAge();
                 ResetTicksToHeal();
             }
         }
@@ -60,7 +60,7 @@ namespace LHM
                                          hd.IsPermanent() && !(hd is Hediff_RegrowingBodyPart)
                                          || hd.def.chronic 
                                          || AdditionalHedifsToHeal.Contains(hd.def.defName) 
-                                         || (hd.def.defName.Equals("TraumaSavant") && Settings.Get().healTraumaSavant)
+                                         || (hd.def.defName.Equals("TraumaSavant") && Settings.Get().HealTraumaSavant)
                                      select hd;
 
             if (selectHediffsQuery.TryRandomElement(out Hediff hediff))
@@ -75,7 +75,7 @@ namespace LHM
                 else hediff.Severity -= healAmount;
             }
 
-            TryRegrowMissingBodypart();
+            if (Settings.Get().EnableRegrowingBodyParts) TryRegrowMissingBodypart();
         }
 
         private void HandleLowSeverity(Hediff hediff)
@@ -133,7 +133,7 @@ namespace LHM
             Pawn.ageTracker.AgeBiologicalTicks.TicksToPeriod(out biologicalYears, out biologicalQuadrums, out biologicalDays, out biologicalHours);
             string ageAfter = "AgeBiological".Translate(biologicalYears, biologicalQuadrums, biologicalDays);
 
-            if (Pawn.IsColonist && Settings.Get().showAgingMessages)
+            if (Pawn.IsColonist && Settings.Get().ShowAgingMessages)
             {
                 Messages.Message("MessageAgeReduced".Translate(
                         Pawn.LabelShort,

@@ -15,17 +15,21 @@ namespace LHM
 
         private float healAmount => healPerDay / (GenDate.TicksPerDay / healInterval);
 
+        private float hpPercent => Severity / base.Part.def.GetMaxHealth(pawn);
+
         public override bool ShouldRemove => Severity <= 0.001f;
 
         public override void PostAdd(DamageInfo? dinfo)
         {
-            Severity = Part.def.GetMaxHealth(pawn) - 1;
-            CurStage.restFallFactorOffset = Part.def.GetMaxHealth(pawn) / 100;
+            Severity = Part.def.GetMaxHealth(pawn) - 1f;
+            
+            CurStage.restFallFactorOffset = Part.def.GetMaxHealth(pawn) / 100f;
+            CurStage.hungerRateFactorOffset = Part.def.GetMaxHealth(pawn) / 100f;
             HediffComp_GetsPermanent permanentComp = (HediffComp_GetsPermanent)comps.Find(comp => comp is HediffComp_GetsPermanent);
             permanentComp.IsPermanent = true;
         }
 
-        public override float PainOffset => Severity / base.Part.def.GetMaxHealth(pawn) * 0.1f;
+        public override float PainOffset => (float)(Math.Pow(hpPercent, 2) * Math.Sqrt(Part.def.GetMaxHealth(pawn)) / 100d);
 
         public override float BleedRate => 0f;
 
@@ -34,14 +38,6 @@ namespace LHM
             get
             {
                 return new Color(0.2f, 0.8f, 0.2f);
-            }
-        }
-
-        public override float SummaryHealthPercentImpact
-        {
-            get
-            {
-                return Severity / (75f * pawn.HealthScale);
             }
         }
 
