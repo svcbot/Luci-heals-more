@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Manifest>
-  <version>1.1.5</version>
-  <manifestUri>https://raw.githubusercontent.com/svcbot/Luci-heals-more/develop/About/Manifest.xml</manifestUri>
-  <downloadUri>https://github.com/svcbot/Luci-heals-more/releases/tag/v1.15</downloadUri>
+  <version>2.0.0</version>
+  <manifestUri>https://raw.githubusercontent.com/svcbot/Luci-heals-more/master/About/Manifest.xml</manifestUri>
+  <downloadUri>https://github.com/svcbot/Luci-heals-more/releases/tag/v2.0</downloadUri>
 </Manifest>
