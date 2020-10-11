@@ -7,13 +7,16 @@ namespace LHM
 {
     class Hediff_RegrowingBodyPart : Hediff_Injury
     {
-        private const int healInterval = 500;
+        private const int healInterval = GenDate.TicksPerDay / healsPerDay;
+        private const int healsPerDay = 6;
+
+        private const float healPercentPerDay = 0.03f;
+        private const float meanHeal = healPercentPerDay / healsPerDay;
+        private const float healDeviation = meanHeal / 2f;
 
         private int ticksUntilNextHeal;
 
-        private readonly float healPerDay = 2f;
-
-        private float healAmount => healPerDay / (GenDate.TicksPerDay / healInterval);
+        private float healAmount => base.Part.def.GetMaxHealth(pawn) * Rand.Gaussian(meanHeal, healDeviation);
 
         private float hpPercent => Severity / base.Part.def.GetMaxHealth(pawn);
 
@@ -61,7 +64,9 @@ namespace LHM
 
         public void SetNextTick()
         {
-            ticksUntilNextHeal = Current.Game.tickManager.TicksGame + healInterval;
+            ticksUntilNextHeal = Settings.Get().EnableDebugHealingSpeed
+                ? Current.Game.tickManager.TicksGame + GenDate.TicksPerHour / 4
+                : Current.Game.tickManager.TicksGame + healInterval;
         }
 
     }

@@ -7,12 +7,11 @@ namespace LHM
 {
     public class HediffComp_LuciferiumHeal : HediffComp
     {
-        private const int OptimalAge = 25;
+        private const int optimalAge = 25;
         
-        private const float MeanHeal = 0.2f;
-        private const float HealDeviation = 0.1f;
-        
-        private const float MinimalHealthAmount = 0.01f;
+        private const float meanHeal = 0.04f / 6f;
+        private const float healDeviation = meanHeal / 2f;
+        private const float healingThreshold = 0.01f;
 
         private int ticksToHeal;
 
@@ -36,8 +35,9 @@ namespace LHM
 
         private void ResetTicksToHeal()
         {
-            // next heal event will happen after an hour in the debug mode or after 4 to 6 days (uniformly distributed) normaly
-            ticksToHeal = Settings.Get().EnableDebugHealingSpeed ? 2500 : Rand.Range(4 * GenDate.TicksPerDay, 6 * GenDate.TicksPerDay); 
+            ticksToHeal = Settings.Get().EnableDebugHealingSpeed 
+                ? GenDate.TicksPerHour / 4 
+                : GenDate.TicksPerHour * 4;
         }
 
         public override void CompPostTick(ref float severityAdjustment)
@@ -65,17 +65,15 @@ namespace LHM
 
             if (selectHediffsQuery.TryRandomElement(out Hediff hediff))
             {
-                float rndHealPercentValue = MeanHeal + Rand.Gaussian() * HealDeviation; // heal % is normaly distributed between 10 % and 30 %
-
+                float rndHealPercentValue = Rand.Gaussian(meanHeal, healDeviation); // 0.667 percent value +- 50 % => between 0.333 % and 1 %
                 float bodyPartMaxHP = hediff.Part.def.GetMaxHealth(hediff.pawn);
-                float rawHealAmount = hediff.IsPermanent() ? bodyPartMaxHP * rndHealPercentValue : rndHealPercentValue;
-                float healAmount = (rawHealAmount < MinimalHealthAmount) ? MinimalHealthAmount : rawHealAmount;
+                float healAmount = hediff.IsPermanent() ? bodyPartMaxHP * rndHealPercentValue : rndHealPercentValue;
 
-                if (hediff.Severity - healAmount < MinimalHealthAmount) HandleLowSeverity(hediff);
+                if (hediff.Severity - healAmount < healingThreshold) HandleLowSeverity(hediff);
                 else hediff.Severity -= healAmount;
             }
 
-            if (Settings.Get().EnableRegrowingBodyParts) TryRegrowMissingBodypart();
+            if (Settings.Get().EnableRegrowingBodyParts && Utils.HungerRate(Pawn) < Settings.Get().HungerRateTreshold) TryRegrowMissingBodypart();
         }
 
         private void HandleLowSeverity(Hediff hediff)
@@ -98,8 +96,8 @@ namespace LHM
         {
             if (Pawn.RaceProps.Humanlike)
             {
-                if (Pawn.ageTracker.AgeBiologicalYears > OptimalAge) ReduceAgeOfHumanlike();
-                else if (Pawn.ageTracker.AgeBiologicalYears < OptimalAge)
+                if (Pawn.ageTracker.AgeBiologicalYears > optimalAge) ReduceAgeOfHumanlike();
+                else if (Pawn.ageTracker.AgeBiologicalYears < optimalAge)
                 {
                     Pawn.ageTracker.AgeBiologicalTicks += (long)(GenDate.TicksPerQuadrum);
                 }
@@ -119,7 +117,6 @@ namespace LHM
                     Pawn.ageTracker.AgeBiologicalTicks += (long)(5 * GenDate.TicksPerDay);
                 }
             }
-
         }
 
         private void ReduceAgeOfHumanlike()
@@ -127,7 +124,7 @@ namespace LHM
             Pawn.ageTracker.AgeBiologicalTicks.TicksToPeriod(out int biologicalYears, out int biologicalQuadrums, out int biologicalDays, out float biologicalHours);
 
             string ageBefore = "AgeBiological".Translate(biologicalYears, biologicalQuadrums, biologicalDays);
-            long diffFromOptimalAge = Pawn.ageTracker.AgeBiologicalTicks - OptimalAge * GenDate.DaysPerYear * GenDate.TicksPerDay;
+            long diffFromOptimalAge = Pawn.ageTracker.AgeBiologicalTicks - optimalAge * GenDate.DaysPerYear * GenDate.TicksPerDay;
             Pawn.ageTracker.AgeBiologicalTicks -= (long)(diffFromOptimalAge * 0.05f);
 
             Pawn.ageTracker.AgeBiologicalTicks.TicksToPeriod(out biologicalYears, out biologicalQuadrums, out biologicalDays, out biologicalHours);
@@ -148,28 +145,13 @@ namespace LHM
         private void TryRegrowMissingBodypart()
         {
             HediffDef regrowingHediffDef = LHM_HediffDefOf.RegrowingBodypart;
-            BodyPartRecord missingPart = FindBiggestMissingBodyPart();
+            BodyPartRecord missingPart = Utils.FindBiggestMissingBodyPart(Pawn);
 
-            if(missingPart != null)
+            if (missingPart != null)
             {
                 Pawn.health.RestorePart(missingPart);
                 Pawn.health.AddHediff(HediffMaker.MakeHediff(regrowingHediffDef, Pawn, missingPart));
             }
-        }
-
-        private BodyPartRecord FindBiggestMissingBodyPart()
-        {
-            BodyPartRecord bodyPartRecord = null;
-            foreach (Hediff_MissingPart missingPartsCommonAncestor in Pawn.health.hediffSet.GetMissingPartsCommonAncestors())
-            {
-                if (
-                    !Pawn.health.hediffSet.PartOrAnyAncestorHasDirectlyAddedParts(missingPartsCommonAncestor.Part) && 
-                    (bodyPartRecord == null || missingPartsCommonAncestor.Part.coverageAbsWithChildren > bodyPartRecord.coverageAbsWithChildren))
-                {
-                    bodyPartRecord = missingPartsCommonAncestor.Part;
-                }
-            }
-            return bodyPartRecord;
         }
 
         public override void CompExposeData()
