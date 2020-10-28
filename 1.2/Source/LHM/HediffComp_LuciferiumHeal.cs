@@ -99,7 +99,7 @@ namespace LHM
                 if (Pawn.ageTracker.AgeBiologicalYears > optimalAge) ReduceAgeOfHumanlike();
                 else if (Pawn.ageTracker.AgeBiologicalYears < optimalAge)
                 {
-                    Pawn.ageTracker.AgeBiologicalTicks += (long)(GenDate.TicksPerQuadrum);
+                    Pawn.ageTracker.AgeBiologicalTicks += (long)(GenDate.TicksPerDay / 2);
                 }
             }
             else // if not humanlike then optimal age is the start of the third stage
@@ -110,11 +110,11 @@ namespace LHM
 
                 if (lifeStage >= 3 && diffFromOptimalAge > 0) // then need to become younger
                 {
-                    Pawn.ageTracker.AgeBiologicalTicks -= (long)(diffFromOptimalAge * 0.05f);
+                    Pawn.ageTracker.AgeBiologicalTicks -= diffFromOptimalAge / 600;
                 }
                 else // in that case mature faster towards 3rd stage
                 {
-                    Pawn.ageTracker.AgeBiologicalTicks += (long)(5 * GenDate.TicksPerDay);
+                    Pawn.ageTracker.AgeBiologicalTicks += (long)(GenDate.TicksPerDay / 6);
                 }
             }
         }
@@ -125,7 +125,7 @@ namespace LHM
 
             string ageBefore = "AgeBiological".Translate(biologicalYears, biologicalQuadrums, biologicalDays);
             long diffFromOptimalAge = Pawn.ageTracker.AgeBiologicalTicks - optimalAge * GenDate.DaysPerYear * GenDate.TicksPerDay;
-            Pawn.ageTracker.AgeBiologicalTicks -= (long)(diffFromOptimalAge * 0.05f);
+            Pawn.ageTracker.AgeBiologicalTicks -= diffFromOptimalAge / 600;
 
             Pawn.ageTracker.AgeBiologicalTicks.TicksToPeriod(out biologicalYears, out biologicalQuadrums, out biologicalDays, out biologicalHours);
             string ageAfter = "AgeBiological".Translate(biologicalYears, biologicalQuadrums, biologicalDays);
