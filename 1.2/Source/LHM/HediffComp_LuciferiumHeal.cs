@@ -60,13 +60,14 @@ namespace LHM
                                          hd.IsPermanent() && !(hd is Hediff_RegrowingBodyPart)
                                          || hd.def.chronic 
                                          || AdditionalHedifsToHeal.Contains(hd.def.defName) 
-                                         || (hd.def.defName.Equals("TraumaSavant") && Settings.Get().HealTraumaSavant)
+                                         || (string.Equals(hd.def.defName, "TraumaSavant", System.StringComparison.Ordinal) 
+                                            && Settings.Get().HealTraumaSavant)
                                      select hd;
 
             if (selectHediffsQuery.TryRandomElement(out Hediff hediff))
             {
                 float rndHealPercentValue = Rand.Gaussian(meanHeal, healDeviation); // 0.667 percent value +- 50 % => between 0.333 % and 1 %
-                float bodyPartMaxHP = hediff.Part.def.GetMaxHealth(hediff.pawn);
+                float bodyPartMaxHP = hediff.Part == null ? 1 : hediff.Part.def.GetMaxHealth(hediff.pawn);
                 float healAmount = hediff.IsPermanent() ? bodyPartMaxHP * rndHealPercentValue : rndHealPercentValue;
 
                 if (hediff.Severity - healAmount < healingThreshold) HandleLowSeverity(hediff);
