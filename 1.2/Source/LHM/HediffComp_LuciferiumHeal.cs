@@ -47,7 +47,7 @@ namespace LHM
                 ResetTicksToHeal();
             else if (ticksToHeal <= 0)
             {
-                if (Settings.Get().ShouldAffectAge) AffectPawnsAge();
+                if (Settings.Get().ShouldReduceAge || Settings.Get().ShouldIncreaseAge) AffectPawnsAge();
 
                 TryHealRandomPermanentWound();
                 ResetTicksToHeal();
@@ -99,7 +99,7 @@ namespace LHM
             if (Pawn.RaceProps.Humanlike)
             {
                 if (Pawn.ageTracker.AgeBiologicalYears > optimalAge) ReduceAgeOfHumanlike();
-                else if (Pawn.ageTracker.AgeBiologicalYears < optimalAge)
+                else if (Settings.Get().ShouldIncreaseAge && Pawn.ageTracker.AgeBiologicalYears < optimalAge)
                 {
                     Pawn.ageTracker.AgeBiologicalTicks += (long)(GenDate.TicksPerDay / 2);
                 }
@@ -110,11 +110,11 @@ namespace LHM
                 long startOfThirdStage = (long)(Pawn.RaceProps.lifeStageAges[2].minAge * GenDate.TicksPerYear);
                 long diffFromOptimalAge = Pawn.ageTracker.AgeBiologicalTicks - startOfThirdStage;
 
-                if (lifeStage >= 3 && diffFromOptimalAge > 0) // then need to become younger
+                if (lifeStage >= 2 && diffFromOptimalAge > 0) // then need to become younger
                 {
-                    Pawn.ageTracker.AgeBiologicalTicks -= diffFromOptimalAge / 600;
+                    ReduceAgeOfNonHumanlike();
                 }
-                else // in that case mature faster towards 3rd stage
+                else if (Settings.Get().ShouldIncreaseAge && Pawn.ageTracker.AgeBiologicalYears < optimalAge) // in that case mature faster towards 3rd stage
                 {
                     Pawn.ageTracker.AgeBiologicalTicks += (long)(GenDate.TicksPerDay / 6);
                 }
@@ -134,6 +134,31 @@ namespace LHM
 
             if (Pawn.IsColonist && Settings.Get().ShowAgingMessages)
             {
+                Messages.Message("MessageAgeReduced".Translate(
+                        Pawn.LabelShort,
+                        ageBefore,
+                        ageAfter
+                    ),
+                    MessageTypeDefOf.PositiveEvent, true
+                );
+            }
+        }
+
+        private void ReduceAgeOfNonHumanlike()
+        {
+            int lifeStage = Pawn.ageTracker.CurLifeStageIndex;
+            long startOfThirdStage = (long)(Pawn.RaceProps.lifeStageAges[2].minAge * GenDate.TicksPerYear);
+            long diffFromOptimalAge = Pawn.ageTracker.AgeBiologicalTicks - startOfThirdStage;
+
+            Pawn.ageTracker.AgeBiologicalTicks -= diffFromOptimalAge / 600;
+            if (Settings.Get().ShowAgingMessages)
+            {
+                Pawn.ageTracker.AgeBiologicalTicks.TicksToPeriod(out int biologicalYears, out int biologicalQuadrums, out int biologicalDays, out float biologicalHours);
+                string ageBefore = "AgeBiological".Translate(biologicalYears, biologicalQuadrums, biologicalDays);
+                Pawn.ageTracker.AgeBiologicalTicks -= diffFromOptimalAge / 600;
+
+                Pawn.ageTracker.AgeBiologicalTicks.TicksToPeriod(out biologicalYears, out biologicalQuadrums, out biologicalDays, out biologicalHours);
+                string ageAfter = "AgeBiological".Translate(biologicalYears, biologicalQuadrums, biologicalDays);
                 Messages.Message("MessageAgeReduced".Translate(
                         Pawn.LabelShort,
                         ageBefore,

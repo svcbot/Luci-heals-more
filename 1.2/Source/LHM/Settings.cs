@@ -15,7 +15,7 @@ namespace LHM
         private int optimalAge = 21;
 
         public bool ShowAgingMessages => showAgingMessages;
-        public bool ShouldAffectAge => shouldReduceAge;
+        public bool ShouldReduceAge => shouldReduceAge;
         public bool ShouldIncreaseAge => shouldIncreaseAge;
         public bool HealTraumaSavant => healTraumaSavant;
         public bool EnableDebugHealingSpeed => enableDebugHealingSpeed;
@@ -67,6 +67,7 @@ namespace LHM
             options.Gap();
 
             options.Label("Debug settings");
+            options.Gap();
 
             options.CheckboxLabeled("Debug luci healing", checkOn: ref enableDebugHealingSpeed, tooltip: "Luci heal procs much more often.");
             options.CheckboxLabeled("Show aging messages", checkOn: ref showAgingMessages, tooltip: "Show notification every time age was affected by luci.");
