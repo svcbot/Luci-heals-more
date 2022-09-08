@@ -6,21 +6,22 @@ namespace LHM
     class Settings : ModSettings
     {
         private bool showAgingMessages = false;
-        private bool shouldAffectAge = true;
+        private bool shouldReduceAge = true;
+        private bool shouldIncreaseAge = false;
         private bool healTraumaSavant = false;
         private bool enableDebugHealingSpeed = false;
         private bool enableRegrowingBodyParts = false;
         private float hungerRateTreshold = 150f;
-        private int opLevel = 0;
+        private int optimalAge = 21;
 
         public bool ShowAgingMessages => showAgingMessages;
-        public bool ShouldAffectAge => shouldAffectAge;
+        public bool ShouldReduceAge => shouldReduceAge;
+        public bool ShouldIncreaseAge => shouldIncreaseAge;
         public bool HealTraumaSavant => healTraumaSavant;
         public bool EnableDebugHealingSpeed => enableDebugHealingSpeed;
         public bool EnableRegrowingBodyParts => enableRegrowingBodyParts;
-
         public float HungerRateTreshold => hungerRateTreshold;
-        public int OPLevel => opLevel;
+        public int OptiomalAge => optimalAge > 0 ? optimalAge : 21;
 
         public static Settings Get()
         {
@@ -35,7 +36,10 @@ namespace LHM
 
             options.Gap();
 
-            options.CheckboxLabeled("Affect biological age", checkOn: ref shouldAffectAge, tooltip: "Reduce or accelerate biological age towards 25 years. In animals the fixed point is the start of the third stage."); 
+            options.Label("Optimal age: " + OptiomalAge);
+            optimalAge = (int)options.Slider(OptiomalAge, 1, 100);
+            options.CheckboxLabeled("Reduce biological age", checkOn: ref shouldReduceAge, tooltip: "Reduce or accelerate biological age towards optimal age. In animals the fixed point is the start of the third stage."); 
+            options.CheckboxLabeled("Increase biological age", checkOn: ref shouldIncreaseAge, tooltip: "Increase biological age towards optimal age. In animals the fixed point is the start of the third stage."); 
             options.CheckboxLabeled("Allow healing trauma savant", checkOn: ref healTraumaSavant, tooltip: "Double edged sword. Most of the time people don't want to heal it, until the best trader who also keeps the mood in the colony high is affected.");
 
             options.Gap();
@@ -62,6 +66,9 @@ namespace LHM
             options.GapLine();
             options.Gap();
 
+            options.Label("Debug settings");
+            options.Gap();
+
             options.CheckboxLabeled("Debug luci healing", checkOn: ref enableDebugHealingSpeed, tooltip: "Luci heal procs much more often.");
             options.CheckboxLabeled("Show aging messages", checkOn: ref showAgingMessages, tooltip: "Show notification every time age was affected by luci.");
 
@@ -71,7 +78,7 @@ namespace LHM
         public override void ExposeData()
         {
             Scribe_Values.Look(ref showAgingMessages, "showAgingMessages", false);
-            Scribe_Values.Look(ref shouldAffectAge, "shouldAffectAge", true);
+            Scribe_Values.Look(ref shouldReduceAge, "shouldAffectAge", true);
             Scribe_Values.Look(ref healTraumaSavant, "healTraumaSavant", false);
             Scribe_Values.Look(ref enableDebugHealingSpeed, "debugHealingSpeed", false);
             Scribe_Values.Look(ref enableRegrowingBodyParts, "enableRegrowingBodyParts", false);
