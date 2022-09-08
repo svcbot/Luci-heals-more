@@ -7,7 +7,7 @@ namespace LHM
 {
     public class HediffComp_LuciferiumHeal : HediffComp
     {
-        private const int optimalAge = 21;
+        private const int optimalAge = 25;
         
         private const float meanHeal = 0.04f / 6f;
         private const float healDeviation = meanHeal / 2f;
@@ -47,9 +47,8 @@ namespace LHM
                 ResetTicksToHeal();
             else if (ticksToHeal <= 0)
             {
-                if (Settings.Get().ShouldAffectAge) AffectPawnsAge();
-
                 TryHealRandomPermanentWound();
+                if (Settings.Get().ShouldAffectAge) AffectPawnsAge();
                 ResetTicksToHeal();
             }
         }
