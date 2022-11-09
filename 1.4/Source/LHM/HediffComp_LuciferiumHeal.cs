@@ -132,6 +132,8 @@ namespace LHM
             Pawn.ageTracker.AgeBiologicalTicks.TicksToPeriod(out biologicalYears, out biologicalQuadrums, out biologicalDays, out biologicalHours);
             string ageAfter = "AgeBiological".Translate(biologicalYears, biologicalQuadrums, biologicalDays);
 
+            Pawn.ageTracker.ResetAgeReversalDemand(Pawn_AgeTracker.AgeReversalReason.ViaTreatment);
+
             if (Pawn.IsColonist && Settings.Get().ShowAgingMessages)
             {
                 Messages.Message("MessageAgeReduced".Translate(
@@ -159,6 +161,7 @@ namespace LHM
 
                 Pawn.ageTracker.AgeBiologicalTicks.TicksToPeriod(out biologicalYears, out biologicalQuadrums, out biologicalDays, out biologicalHours);
                 string ageAfter = "AgeBiological".Translate(biologicalYears, biologicalQuadrums, biologicalDays);
+
                 Messages.Message("MessageAgeReduced".Translate(
                         Pawn.LabelShort,
                         ageBefore,
