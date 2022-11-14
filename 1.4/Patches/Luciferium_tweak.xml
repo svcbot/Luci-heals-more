@@ -18,4 +18,16 @@
 		</value>
 	</Operation>  
 
+	<Operation Class="PatchOperationFindMod">
+		<mods>
+			<li>Biotech</li>
+		</mods>
+		<match Class="PatchOperationReplace">
+			<xpath>/Defs/GeneDef[defName = "TotalHealing"]/geneClass</xpath>
+			<value>
+				<geneClass>LHM.Gene_GradualHealing</geneClass>
+			</value>
+		</match>
+	</Operation>
+
 </Patch>

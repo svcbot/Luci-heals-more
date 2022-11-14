@@ -17,7 +17,7 @@ namespace LHM
 
         public HediffCompProperties_LuciferiumHeal Props => (HediffCompProperties_LuciferiumHeal) props;
 
-        public HashSet<string> AdditionalHedifsToHeal { get; } = new HashSet<string>()
+        public static HashSet<string> AdditionalHedifsToHeal { get; } = new HashSet<string>()
         {
             "ChemicalDamageSevere", "ChemicalDamageModerate", "Cirrhosis"
         };
@@ -47,16 +47,16 @@ namespace LHM
                 ResetTicksToHeal();
             else if (ticksToHeal <= 0)
             {
-                if (Settings.Get().ShouldReduceAge || Settings.Get().ShouldIncreaseAge) AffectPawnsAge();
+                if (Settings.Get().ShouldReduceAge || Settings.Get().ShouldIncreaseAge) AffectPawnsAge(Pawn);
 
-                TryHealRandomPermanentWound();
+                TryHealRandomPermanentWound(Pawn, parent.LabelCap);
                 ResetTicksToHeal();
             }
         }
 
-        private void TryHealRandomPermanentWound()
+        public static void TryHealRandomPermanentWound(Pawn pawn, string cause)
         {
-            var selectHediffsQuery = from hd in Pawn.health.hediffSet.hediffs
+            var selectHediffsQuery = from hd in pawn.health.hediffSet.hediffs
                                      where 
                                          hd.IsPermanent() && !(hd is Hediff_RegrowingBodyPart)
                                          || hd.def.chronic 
@@ -71,73 +71,66 @@ namespace LHM
                 float bodyPartMaxHP = hediff.Part == null ? 1 : hediff.Part.def.GetMaxHealth(hediff.pawn);
                 float healAmount = hediff.IsPermanent() ? bodyPartMaxHP * rndHealPercentValue : rndHealPercentValue;
 
-                if (hediff.Severity - healAmount < healingThreshold) HandleLowSeverity(hediff);
+                if (hediff.Severity - healAmount < healingThreshold) HandleLowSeverity(pawn, hediff, cause);
                 else hediff.Severity -= healAmount;
             }
 
-            if (Settings.Get().EnableRegrowingBodyParts && Utils.HungerRate(Pawn) < Settings.Get().HungerRateTreshold) TryRegrowMissingBodypart();
+            if (Settings.Get().EnableRegrowingBodyParts && Utils.HungerRate(pawn) < Settings.Get().HungerRateTreshold) TryRegrowMissingBodypart(pawn);
         }
 
-        private void HandleLowSeverity(Hediff hediff)
+        private static void HandleLowSeverity(Pawn pawn, Hediff hediff, string cause)
         {
-            Pawn.health.RemoveHediff(hediff);
-            if (PawnUtility.ShouldSendNotificationAbout(Pawn))
+            pawn.health.RemoveHediff(hediff);
+            if (PawnUtility.ShouldSendNotificationAbout(pawn))
             {
-                Messages.Message("MessagePermanentWoundHealed".Translate(
-                        parent.LabelCap,
-                        Pawn.LabelShort,
-                        hediff.Label,
-                        Pawn.Named("PAWN")
-                    ),
-                    Pawn, MessageTypeDefOf.PositiveEvent, true
-                );
+                Messages.Message("MessagePermanentWoundHealed".Translate(cause, pawn.LabelShort, hediff.Label, pawn.Named("PAWN")), pawn, MessageTypeDefOf.PositiveEvent);
             }
         }
 
-        private void AffectPawnsAge()
+        private static void AffectPawnsAge(Pawn pawn)
         {
-            if (Pawn.RaceProps.Humanlike)
+            if (pawn.RaceProps.Humanlike)
             {
-                if (Pawn.ageTracker.AgeBiologicalYears > optimalAge) ReduceAgeOfHumanlike();
-                else if (Settings.Get().ShouldIncreaseAge && Pawn.ageTracker.AgeBiologicalYears < optimalAge)
+                if (pawn.ageTracker.AgeBiologicalYears > optimalAge) ReduceAgeOfHumanlike(pawn);
+                else if (Settings.Get().ShouldIncreaseAge && pawn.ageTracker.AgeBiologicalYears < optimalAge)
                 {
-                    Pawn.ageTracker.AgeBiologicalTicks += (long)(GenDate.TicksPerDay / 2);
+                    pawn.ageTracker.AgeBiologicalTicks += (long)(GenDate.TicksPerDay / 2);
                 }
             }
             else // if not humanlike then optimal age is the start of the third stage
             {
-                int lifeStage = Pawn.ageTracker.CurLifeStageIndex;
-                long startOfThirdStage = (long)(Pawn.RaceProps.lifeStageAges[2].minAge * GenDate.TicksPerYear);
-                long diffFromOptimalAge = Pawn.ageTracker.AgeBiologicalTicks - startOfThirdStage;
+                int lifeStage = pawn.ageTracker.CurLifeStageIndex;
+                long startOfThirdStage = (long)(pawn.RaceProps.lifeStageAges[2].minAge * GenDate.TicksPerYear);
+                long diffFromOptimalAge = pawn.ageTracker.AgeBiologicalTicks - startOfThirdStage;
 
                 if (lifeStage >= 2 && diffFromOptimalAge > 0) // then need to become younger
                 {
-                    ReduceAgeOfNonHumanlike();
+                    ReduceAgeOfNonHumanlike(pawn);
                 }
-                else if (Settings.Get().ShouldIncreaseAge && Pawn.ageTracker.AgeBiologicalYears < optimalAge) // in that case mature faster towards 3rd stage
+                else if (Settings.Get().ShouldIncreaseAge && pawn.ageTracker.AgeBiologicalYears < optimalAge) // in that case mature faster towards 3rd stage
                 {
-                    Pawn.ageTracker.AgeBiologicalTicks += (long)(GenDate.TicksPerDay / 6);
+                    pawn.ageTracker.AgeBiologicalTicks += (long)(GenDate.TicksPerDay / 6);
                 }
             }
         }
 
-        private void ReduceAgeOfHumanlike()
+        private static void ReduceAgeOfHumanlike(Pawn pawn)
         {
-            Pawn.ageTracker.AgeBiologicalTicks.TicksToPeriod(out int biologicalYears, out int biologicalQuadrums, out int biologicalDays, out float biologicalHours);
+            pawn.ageTracker.AgeBiologicalTicks.TicksToPeriod(out int biologicalYears, out int biologicalQuadrums, out int biologicalDays, out float biologicalHours);
 
             string ageBefore = "AgeBiological".Translate(biologicalYears, biologicalQuadrums, biologicalDays);
-            long diffFromOptimalAge = Pawn.ageTracker.AgeBiologicalTicks - optimalAge * GenDate.DaysPerYear * GenDate.TicksPerDay;
-            Pawn.ageTracker.AgeBiologicalTicks -= diffFromOptimalAge / 600;
+            long diffFromOptimalAge = pawn.ageTracker.AgeBiologicalTicks - optimalAge * GenDate.DaysPerYear * GenDate.TicksPerDay;
+            pawn.ageTracker.AgeBiologicalTicks -= diffFromOptimalAge / 600;
 
-            Pawn.ageTracker.AgeBiologicalTicks.TicksToPeriod(out biologicalYears, out biologicalQuadrums, out biologicalDays, out biologicalHours);
+            pawn.ageTracker.AgeBiologicalTicks.TicksToPeriod(out biologicalYears, out biologicalQuadrums, out biologicalDays, out biologicalHours);
             string ageAfter = "AgeBiological".Translate(biologicalYears, biologicalQuadrums, biologicalDays);
 
-            Pawn.ageTracker.ResetAgeReversalDemand(Pawn_AgeTracker.AgeReversalReason.ViaTreatment);
+            pawn.ageTracker.ResetAgeReversalDemand(Pawn_AgeTracker.AgeReversalReason.ViaTreatment);
 
-            if (Pawn.IsColonist && Settings.Get().ShowAgingMessages)
+            if (pawn.IsColonist && Settings.Get().ShowAgingMessages)
             {
                 Messages.Message("MessageAgeReduced".Translate(
-                        Pawn.LabelShort,
+                        pawn.LabelShort,
                         ageBefore,
                         ageAfter
                     ),
@@ -146,24 +139,24 @@ namespace LHM
             }
         }
 
-        private void ReduceAgeOfNonHumanlike()
+        private static void ReduceAgeOfNonHumanlike(Pawn pawn)
         {
-            int lifeStage = Pawn.ageTracker.CurLifeStageIndex;
-            long startOfThirdStage = (long)(Pawn.RaceProps.lifeStageAges[2].minAge * GenDate.TicksPerYear);
-            long diffFromOptimalAge = Pawn.ageTracker.AgeBiologicalTicks - startOfThirdStage;
+            int lifeStage = pawn.ageTracker.CurLifeStageIndex;
+            long startOfThirdStage = (long)(pawn.RaceProps.lifeStageAges[2].minAge * GenDate.TicksPerYear);
+            long diffFromOptimalAge = pawn.ageTracker.AgeBiologicalTicks - startOfThirdStage;
 
-            Pawn.ageTracker.AgeBiologicalTicks -= diffFromOptimalAge / 600;
+            pawn.ageTracker.AgeBiologicalTicks -= diffFromOptimalAge / 600;
             if (Settings.Get().ShowAgingMessages)
             {
-                Pawn.ageTracker.AgeBiologicalTicks.TicksToPeriod(out int biologicalYears, out int biologicalQuadrums, out int biologicalDays, out float biologicalHours);
+                pawn.ageTracker.AgeBiologicalTicks.TicksToPeriod(out int biologicalYears, out int biologicalQuadrums, out int biologicalDays, out float biologicalHours);
                 string ageBefore = "AgeBiological".Translate(biologicalYears, biologicalQuadrums, biologicalDays);
-                Pawn.ageTracker.AgeBiologicalTicks -= diffFromOptimalAge / 600;
+                pawn.ageTracker.AgeBiologicalTicks -= diffFromOptimalAge / 600;
 
-                Pawn.ageTracker.AgeBiologicalTicks.TicksToPeriod(out biologicalYears, out biologicalQuadrums, out biologicalDays, out biologicalHours);
+                pawn.ageTracker.AgeBiologicalTicks.TicksToPeriod(out biologicalYears, out biologicalQuadrums, out biologicalDays, out biologicalHours);
                 string ageAfter = "AgeBiological".Translate(biologicalYears, biologicalQuadrums, biologicalDays);
 
                 Messages.Message("MessageAgeReduced".Translate(
-                        Pawn.LabelShort,
+                        pawn.LabelShort,
                         ageBefore,
                         ageAfter
                     ),
@@ -172,15 +165,15 @@ namespace LHM
             }
         }
 
-        private void TryRegrowMissingBodypart()
+        private static void TryRegrowMissingBodypart(Pawn pawn)
         {
             HediffDef regrowingHediffDef = LHM_HediffDefOf.RegrowingBodypart;
-            BodyPartRecord missingPart = Utils.FindBiggestMissingBodyPart(Pawn);
+            BodyPartRecord missingPart = Utils.FindBiggestMissingBodyPart(pawn);
 
             if (missingPart != null)
             {
-                Pawn.health.RestorePart(missingPart);
-                Pawn.health.AddHediff(HediffMaker.MakeHediff(regrowingHediffDef, Pawn, missingPart));
+                pawn.health.RestorePart(missingPart);
+                pawn.health.AddHediff(HediffMaker.MakeHediff(regrowingHediffDef, pawn, missingPart));
             }
         }
 
