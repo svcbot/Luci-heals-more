@@ -8,8 +8,7 @@
 
 		<scenarioCanAdd>true</scenarioCanAdd>
 		<comps>
-			<li Class="HediffCompProperties_GetsPermanent">
-			</li>
+			<li Class="HediffCompProperties_GetsPermanent"></li>
 		</comps>
 
 		<stages>

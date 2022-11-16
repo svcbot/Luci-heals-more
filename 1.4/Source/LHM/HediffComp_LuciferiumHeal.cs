@@ -100,14 +100,13 @@ namespace LHM
             else // if not humanlike then optimal age is the start of the third stage
             {
                 int lifeStage = pawn.ageTracker.CurLifeStageIndex;
-                long startOfThirdStage = (long)(pawn.RaceProps.lifeStageAges[2].minAge * GenDate.TicksPerYear);
-                long diffFromOptimalAge = pawn.ageTracker.AgeBiologicalTicks - startOfThirdStage;
+                int adultLifeStageIndex = pawn.RaceProps.lifeStageAges.Count - 1;
 
-                if (lifeStage >= 2 && diffFromOptimalAge > 0) // then need to become younger
+                if (lifeStage == adultLifeStageIndex) // then need to become younger
                 {
                     ReduceAgeOfNonHumanlike(pawn);
                 }
-                else if (Settings.Get().ShouldIncreaseAge && pawn.ageTracker.AgeBiologicalYears < optimalAge) // in that case mature faster towards 3rd stage
+                else if (lifeStage < adultLifeStageIndex && Settings.Get().ShouldIncreaseAge && pawn.ageTracker.AgeBiologicalYears < optimalAge) // in that case mature faster towards 3rd stage
                 {
                     pawn.ageTracker.AgeBiologicalTicks += (long)(GenDate.TicksPerDay / 6);
                 }
@@ -141,9 +140,9 @@ namespace LHM
 
         private static void ReduceAgeOfNonHumanlike(Pawn pawn)
         {
-            int lifeStage = pawn.ageTracker.CurLifeStageIndex;
-            long startOfThirdStage = (long)(pawn.RaceProps.lifeStageAges[2].minAge * GenDate.TicksPerYear);
-            long diffFromOptimalAge = pawn.ageTracker.AgeBiologicalTicks - startOfThirdStage;
+            int adultLifeStageIndex = pawn.RaceProps.lifeStageAges.Count - 1;
+            long startOfAdultStage = (long)(pawn.RaceProps.lifeStageAges[adultLifeStageIndex].minAge * GenDate.TicksPerYear);
+            long diffFromOptimalAge = pawn.ageTracker.AgeBiologicalTicks - startOfAdultStage;
 
             pawn.ageTracker.AgeBiologicalTicks -= diffFromOptimalAge / 600;
             if (Settings.Get().ShowAgingMessages)

@@ -7,8 +7,8 @@ namespace LHM
 {
     class Hediff_RegrowingBodyPart : Hediff_Injury
     {
+        private const int healsPerDay = 6; 
         private const int healInterval = GenDate.TicksPerDay / healsPerDay;
-        private const int healsPerDay = 6;
 
         private const float healPercentPerDay = 0.03f;
         private const float meanHeal = healPercentPerDay / healsPerDay;
@@ -59,7 +59,13 @@ namespace LHM
             {
                 Severity -= healAmount;
                 SetNextTick();
+                pawn.health.Notify_HediffChanged(this);
             }
+        }
+
+        public override void Heal(float amount)
+        {
+            // disable standard healing
         }
 
         public void SetNextTick()

@@ -9,8 +9,6 @@ namespace LHM
 	{
 		private int ticksToHeal;
 
-		private static readonly IntRange HealingIntervalTicksRange = new IntRange(900000, 1800000);
-
 		public override void PostAdd()
 		{
 			base.PostAdd();
