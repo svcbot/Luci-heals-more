@@ -17,5 +17,10 @@
 				<hungerRateFactor>1</hungerRateFactor>
 			</li>
 		</stages>
+
+		<injuryProps>
+			<destroyedLabel>Regrowing</destroyedLabel>
+			<destroyedOutLabel>Regrowing</destroyedOutLabel>
+		</injuryProps>
 	</HediffDef>
 </Defs>

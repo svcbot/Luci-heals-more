@@ -107,14 +107,13 @@ namespace LHM
             else // if not humanlike then optimal age is the start of the third stage
             {
                 int lifeStage = Pawn.ageTracker.CurLifeStageIndex;
-                long startOfThirdStage = (long)(Pawn.RaceProps.lifeStageAges[2].minAge * GenDate.TicksPerYear);
-                long diffFromOptimalAge = Pawn.ageTracker.AgeBiologicalTicks - startOfThirdStage;
+                int adultLifeStageIndex = Pawn.RaceProps.lifeStageAges.Count - 1;
 
-                if (lifeStage >= 2 && diffFromOptimalAge > 0) // then need to become younger
+                if (lifeStage == adultLifeStageIndex) // then need to become younger
                 {
                     ReduceAgeOfNonHumanlike();
                 }
-                else if (Settings.Get().ShouldIncreaseAge && Pawn.ageTracker.AgeBiologicalYears < optimalAge) // in that case mature faster towards 3rd stage
+                else if (lifeStage < adultLifeStageIndex && Settings.Get().ShouldIncreaseAge) // in that case mature faster towards 3rd stage
                 {
                     Pawn.ageTracker.AgeBiologicalTicks += (long)(GenDate.TicksPerDay / 6);
                 }
@@ -148,9 +147,9 @@ namespace LHM
 
         private void ReduceAgeOfNonHumanlike()
         {
-            int lifeStage = Pawn.ageTracker.CurLifeStageIndex;
-            long startOfThirdStage = (long)(Pawn.RaceProps.lifeStageAges[2].minAge * GenDate.TicksPerYear);
-            long diffFromOptimalAge = Pawn.ageTracker.AgeBiologicalTicks - startOfThirdStage;
+            int adultLifeStageIndex = Pawn.RaceProps.lifeStageAges.Count - 1;
+            long startOfAdultStage = (long)(Pawn.RaceProps.lifeStageAges[adultLifeStageIndex].minAge * GenDate.TicksPerYear);
+            long diffFromOptimalAge = Pawn.ageTracker.AgeBiologicalTicks - startOfAdultStage;
 
             Pawn.ageTracker.AgeBiologicalTicks -= diffFromOptimalAge / 600;
             if (Settings.Get().ShowAgingMessages)
