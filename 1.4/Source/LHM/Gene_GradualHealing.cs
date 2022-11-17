@@ -19,7 +19,7 @@ namespace LHM
 		{
 			base.Tick();
 			ticksToHeal--;
-			if (ticksToHeal <= 0)
+			if (ticksToHeal <= 0 || ticksToHeal > GenDate.TicksPerHour * 4)
 			{
 				HediffComp_LuciferiumHeal.TryHealRandomPermanentWound(pawn, LabelCap);
 				ResetInterval();

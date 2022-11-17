@@ -43,9 +43,7 @@ namespace LHM
         public override void CompPostTick(ref float severityAdjustment)
         {
             ticksToHeal--;
-            if (ticksToHeal >= 6 * GenDate.TicksPerDay) 
-                ResetTicksToHeal();
-            else if (ticksToHeal <= 0)
+            if (ticksToHeal <= 0 || ticksToHeal > GenDate.TicksPerHour * 4)
             {
                 if (Settings.Get().ShouldReduceAge || Settings.Get().ShouldIncreaseAge) AffectPawnsAge(Pawn);
 
