@@ -73,7 +73,7 @@ namespace LHM
                 else hediff.Severity -= healAmount;
             }
 
-            if (Settings.Get().EnableRegrowingBodyParts && Utils.HungerRate(pawn) < Settings.Get().HungerRateTreshold) TryRegrowMissingBodypart(pawn);
+            if (Settings.Get().EnableRegrowingBodyParts && Utils.HungerRate(pawn) < Settings.Get().HungerRateTreshold / 100) TryRegrowMissingBodypart(pawn);
         }
 
         private static void HandleLowSeverity(Pawn pawn, Hediff hediff, string cause)
