@@ -21,7 +21,7 @@ namespace LHM
         public bool EnableDebugHealingSpeed => enableDebugHealingSpeed;
         public bool EnableRegrowingBodyParts => enableRegrowingBodyParts;
         public float HungerRateTreshold => hungerRateTreshold;
-        public int OptiomalAge => optimalAge > 0 ? optimalAge : 21;
+        public int OptiomalAge => optimalAge;
 
         public static Settings Get()
         {
@@ -83,6 +83,7 @@ namespace LHM
             Scribe_Values.Look(ref enableDebugHealingSpeed, "debugHealingSpeed", false);
             Scribe_Values.Look(ref enableRegrowingBodyParts, "enableRegrowingBodyParts", false);
             Scribe_Values.Look(ref hungerRateTreshold, "HungerRateTreshold", 150f);
+            Scribe_Values.Look(ref optimalAge, "optimalAge", 21, true);
         }
     }
 
