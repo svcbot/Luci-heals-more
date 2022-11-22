@@ -11,7 +11,7 @@ namespace LHM
         private bool healTraumaSavant = false;
         private bool enableDebugHealingSpeed = false;
         private bool enableRegrowingBodyParts = false;
-        private float hungerRateTreshold = 150f;
+        private float hungerRateTreshold = 200f;
         private int optimalAge = 21;
 
         public bool ShowAgingMessages => showAgingMessages;
@@ -77,12 +77,12 @@ namespace LHM
 
         public override void ExposeData()
         {
-            Scribe_Values.Look(ref showAgingMessages, "showAgingMessages", false);
-            Scribe_Values.Look(ref shouldReduceAge, "shouldAffectAge", true);
-            Scribe_Values.Look(ref healTraumaSavant, "healTraumaSavant", false);
-            Scribe_Values.Look(ref enableDebugHealingSpeed, "debugHealingSpeed", false);
-            Scribe_Values.Look(ref enableRegrowingBodyParts, "enableRegrowingBodyParts", false);
-            Scribe_Values.Look(ref hungerRateTreshold, "HungerRateTreshold", 150f);
+            Scribe_Values.Look(ref showAgingMessages, "showAgingMessages", false, true);
+            Scribe_Values.Look(ref shouldReduceAge, "shouldAffectAge", true, true);
+            Scribe_Values.Look(ref healTraumaSavant, "healTraumaSavant", false, true);
+            Scribe_Values.Look(ref enableDebugHealingSpeed, "debugHealingSpeed", false, true);
+            Scribe_Values.Look(ref enableRegrowingBodyParts, "enableRegrowingBodyParts", false, true);
+            Scribe_Values.Look(ref hungerRateTreshold, "HungerRateTreshold", 150f, true);
             Scribe_Values.Look(ref optimalAge, "optimalAge", 21, true);
         }
     }
