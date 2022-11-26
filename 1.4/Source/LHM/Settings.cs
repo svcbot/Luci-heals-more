@@ -82,7 +82,7 @@ namespace LHM
             Scribe_Values.Look(ref healTraumaSavant, "healTraumaSavant", false, true);
             Scribe_Values.Look(ref enableDebugHealingSpeed, "debugHealingSpeed", false, true);
             Scribe_Values.Look(ref enableRegrowingBodyParts, "enableRegrowingBodyParts", false, true);
-            Scribe_Values.Look(ref hungerRateTreshold, "HungerRateTreshold", 150f, true);
+            Scribe_Values.Look(ref hungerRateTreshold, "HungerRateTreshold", 200f, true);
             Scribe_Values.Look(ref optimalAge, "optimalAge", 21, true);
         }
     }

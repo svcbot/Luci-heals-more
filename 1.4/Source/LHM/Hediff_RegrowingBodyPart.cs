@@ -16,23 +16,23 @@ namespace LHM
 
         private int ticksUntilNextHeal;
 
-        private float healAmount => base.Part.def.GetMaxHealth(pawn) * Rand.Gaussian(meanHeal, healDeviation);
+        private float healAmount => base.Part.def.GetMaxHealth(pawn) * pawn.HealthScale * Rand.Gaussian(meanHeal, healDeviation);
 
-        private float hpPercent => Severity / base.Part.def.GetMaxHealth(pawn);
+        private float hpPercent => Severity / (base.Part.def.GetMaxHealth(pawn) * pawn.HealthScale);
 
         public override bool ShouldRemove => Severity <= 0.001f;
 
         public override void PostAdd(DamageInfo? dinfo)
         {
-            Severity = Part.def.GetMaxHealth(pawn) - 1f;
+            Severity = Part.def.GetMaxHealth(pawn) * pawn.HealthScale - 1f;
             
-            CurStage.restFallFactorOffset = Part.def.GetMaxHealth(pawn) / 100f;
-            CurStage.hungerRateFactorOffset = Part.def.GetMaxHealth(pawn) / 100f;
+            CurStage.restFallFactorOffset = Part.def.GetMaxHealth(pawn) * pawn.HealthScale / 100f;
+            CurStage.hungerRateFactorOffset = Part.def.GetMaxHealth(pawn) * pawn.HealthScale / 100f;
             HediffComp_GetsPermanent permanentComp = (HediffComp_GetsPermanent)comps.Find(comp => comp is HediffComp_GetsPermanent);
             permanentComp.IsPermanent = true;
         }
 
-        public override float PainOffset => (float)(Math.Pow(hpPercent, 2) * Math.Sqrt(Part.def.GetMaxHealth(pawn)) / 100d);
+        public override float PainOffset => (float)(Math.Pow(hpPercent, 2) * Math.Sqrt(Part.def.GetMaxHealth(pawn) * pawn.HealthScale) / 100d);
 
         public override float BleedRate => 0f;
 
