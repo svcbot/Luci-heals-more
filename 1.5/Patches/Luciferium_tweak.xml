@@ -16,7 +16,7 @@
 				<offset>0.10</offset>
 			</li>
 		</value>
-	</Operation>  
+	</Operation>
 
 	<Operation Class="PatchOperationFindMod">
 		<mods>
@@ -24,6 +24,18 @@
 		</mods>
 		<match Class="PatchOperationReplace">
 			<xpath>/Defs/GeneDef[defName = "TotalHealing"]/geneClass</xpath>
+			<value>
+				<geneClass>LHM.Gene_GradualHealing</geneClass>
+			</value>
+		</match>
+	</Operation>
+
+	<Operation Class="PatchOperationFindMod">
+		<mods>
+			<li>RedMattis.BigSmall.Core</li>
+		</mods>
+		<match Class="PatchOperationReplace">
+			<xpath>/Defs/GeneDef[defName = "BS_Fast_TotalHealing"]/geneClass</xpath>
 			<value>
 				<geneClass>LHM.Gene_GradualHealing</geneClass>
 			</value>
