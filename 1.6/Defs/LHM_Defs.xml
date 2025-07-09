@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+	<HediffDef>
+		<defName>RegrowingBodypart</defName>
+		<hediffClass>LHM.Hediff_RegrowingBodyPart</hediffClass>
+		<label>Regrowing</label>
+		<description>Try to not loose it again next time</description>
+
+		<scenarioCanAdd>true</scenarioCanAdd>
+		<comps>
+			<li Class="HediffCompProperties_GetsPermanent"></li>
+		</comps>
+
+		<stages>
+			<li>
+				<hungerRateFactor>1</hungerRateFactor>
+			</li>
+		</stages>
+	</HediffDef>
+</Defs>
