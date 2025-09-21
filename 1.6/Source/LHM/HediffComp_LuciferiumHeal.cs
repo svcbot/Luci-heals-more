@@ -7,8 +7,6 @@ namespace LHM
 {
     public class HediffComp_LuciferiumHeal : HediffComp
     {
-        private const int optimalAge = 21;
-        
         private const float meanHeal = 0.04f / 6f;
         private const float healDeviation = meanHeal / 2f;
         private const float healingThreshold = 0.01f;
@@ -87,12 +85,16 @@ namespace LHM
 
         private static void AffectPawnsAge(Pawn pawn)
         {
+            int optimalAge = Settings.Get().OptiomalAge;
             if (pawn.RaceProps.Humanlike)
             {
-                if (pawn.ageTracker.AgeBiologicalYears > optimalAge) ReduceAgeOfHumanlike(pawn);
+                if (Settings.Get().ShouldReduceAge && pawn.ageTracker.AgeBiologicalYears > optimalAge)
+                {
+                    ReduceAgeOfHumanlike(pawn);
+                }
                 else if (Settings.Get().ShouldIncreaseAge && pawn.ageTracker.AgeBiologicalYears < optimalAge)
                 {
-                    pawn.ageTracker.AgeBiologicalTicks += (long)(GenDate.TicksPerDay / 2);
+                    IncreaseAgeOfHumanlike(pawn);
                 }
             }
             else // if not humanlike then optimal age is the start of the third stage
@@ -106,13 +108,14 @@ namespace LHM
                 }
                 else if (lifeStage < adultLifeStageIndex && Settings.Get().ShouldIncreaseAge && pawn.ageTracker.AgeBiologicalYears < optimalAge) // in that case mature faster towards 3rd stage
                 {
-                    pawn.ageTracker.AgeBiologicalTicks += (long)(GenDate.TicksPerDay / 6);
+                    pawn.ageTracker.AgeBiologicalTicks += (long)(GenDate.TicksPerHour * 4);
                 }
             }
         }
 
         private static void ReduceAgeOfHumanlike(Pawn pawn)
         {
+            int optimalAge = Settings.Get().OptiomalAge;
             pawn.ageTracker.AgeBiologicalTicks.TicksToPeriod(out int biologicalYears, out int biologicalQuadrums, out int biologicalDays, out float biologicalHours);
 
             string ageBefore = "AgeBiological".Translate(biologicalYears, biologicalQuadrums, biologicalDays);
@@ -123,6 +126,29 @@ namespace LHM
             string ageAfter = "AgeBiological".Translate(biologicalYears, biologicalQuadrums, biologicalDays);
 
             pawn.ageTracker.ResetAgeReversalDemand(Pawn_AgeTracker.AgeReversalReason.ViaTreatment);
+
+            if (pawn.IsColonist && Settings.Get().ShowAgingMessages)
+            {
+                Messages.Message("MessageAgeReduced".Translate(
+                        pawn.LabelShort,
+                        ageBefore,
+                        ageAfter
+                    ),
+                    MessageTypeDefOf.PositiveEvent, true
+                );
+            }
+        }
+
+        private static void IncreaseAgeOfHumanlike(Pawn pawn)
+        {
+            pawn.ageTracker.AgeBiologicalTicks.TicksToPeriod(out int biologicalYears, out int biologicalQuadrums, out int biologicalDays, out float biologicalHours);
+
+            string ageBefore = "AgeBiological".Translate(biologicalYears, biologicalQuadrums, biologicalDays);
+
+            pawn.ageTracker.AgeBiologicalTicks += GenDate.TicksPerHour * 4;
+
+            pawn.ageTracker.AgeBiologicalTicks.TicksToPeriod(out biologicalYears, out biologicalQuadrums, out biologicalDays, out biologicalHours);
+            string ageAfter = "AgeBiological".Translate(biologicalYears, biologicalQuadrums, biologicalDays);
 
             if (pawn.IsColonist && Settings.Get().ShowAgingMessages)
             {
