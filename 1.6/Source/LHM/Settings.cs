@@ -84,6 +84,7 @@ namespace LHM
         {
             Scribe_Values.Look(ref showAgingMessages, "showAgingMessages", false, true);
             Scribe_Values.Look(ref shouldReduceAge, "shouldAffectAge", true, true);
+            Scribe_Values.Look(ref shouldIncreaseAge, "shouldIncreaseAge", true, true);
             Scribe_Values.Look(ref healTraumaSavant, "healTraumaSavant", false, true);
             Scribe_Values.Look(ref enableDebugHealingSpeed, "debugHealingSpeed", false, true);
             Scribe_Values.Look(ref enableRegrowingBodyParts, "enableRegrowingBodyParts", false, true);
