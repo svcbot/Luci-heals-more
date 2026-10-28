@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Patch>
+	<Operation Class="PatchOperationReplace">
+		<xpath>/Defs/HediffDef[defName = "LuciferiumHigh"]/comps/li[@Class="HediffCompProperties_HealPermanentWounds"]</xpath>
+		<value>
+			<li Class="LHM.HediffCompProperties_LuciferiumHeal" />
+		</value>
+	</Operation>
+
+	<!-- vanila luciferium should have this -->
+	<Operation Class="PatchOperationAdd">
+		<xpath>/Defs/HediffDef[defName = "LuciferiumHigh"]/stages/li/capMods</xpath>
+		<value>
+			<li>
+				<capacity>Hearing</capacity>
+				<offset>0.10</offset>
+			</li>
+		</value>
+	</Operation>
+
+	<Operation Class="PatchOperationFindMod">
+		<mods>
+			<li>Biotech</li>
+		</mods>
+		<match Class="PatchOperationReplace">
+			<xpath>/Defs/GeneDef[defName = "TotalHealing"]/geneClass</xpath>
+			<value>
+				<geneClass>LHM.Gene_GradualHealing</geneClass>
+			</value>
+		</match>
+	</Operation>
+
+	<Operation Class="PatchOperationFindMod">
+		<mods>
+			<li>RedMattis.BigSmall.Core</li>
+		</mods>
+		<match Class="PatchOperationReplace">
+			<xpath>/Defs/GeneDef[defName = "BS_Fast_TotalHealing"]/geneClass</xpath>
+			<value>
+				<geneClass>LHM.Gene_GradualHealing</geneClass>
+			</value>
+		</match>
+	</Operation>
+
+</Patch>
