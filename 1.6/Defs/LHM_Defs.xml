@@ -4,7 +4,7 @@
 		<defName>RegrowingBodypart</defName>
 		<hediffClass>LHM.Hediff_RegrowingBodyPart</hediffClass>
 		<label>Regrowing</label>
-		<description>Try to not loose it again next time</description>
+		<description>Try to not lose it again next time</description>
 
 		<scenarioCanAdd>true</scenarioCanAdd>
 		<comps>
